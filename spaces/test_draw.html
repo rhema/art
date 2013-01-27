@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+	
+.progresslineleft { clear: left; float: left; padding-top: 4px; }
+.progresslineright { float: left; padding-top: 4px; }
+.progressbar {
+ border: 1px solid #ccc;
+ width: 400px;
+ margin: 2px;
+ padding: 1px;
+ background: white;
+ float: left;
+}
+.progressbar div {
+ background-color: #ACE97C;
+ text-align: right;
+}	
+	
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+var canvas = 0;
+var x = 0;
+var y = 0;
+var max_points = 30;
+var trail = [];
+
+
+var dotLineLength = function(x0, y0, x1, y1, x, y) {//via  http://jsfromhell.com/math/dot-line-length
+	var o = false;
+  function lineLength(x, y, x0, y0){
+    return Math.sqrt((x -= x0) * x + (y -= y0) * y);
+  }
+  if(o && !(o = function(x, y, x0, y0, x1, y1){
+    if(!(x1 - x0)) return {x: x0, y: y};
+    else if(!(y1 - y0)) return {x: x, y: y0};
+    var left, tg = -1 / ((y1 - y0) / (x1 - x0));
+    return {x: left = (x1 * (x * tg - y + y0) + x0 * (x * - tg + y - y1)) / (tg * (x1 - x0) + y0 - y1), y: tg * left - tg * x + y};
+  }(x, y, x0, y0, x1, y1), o.x >= Math.min(x0, x1) && o.x <= Math.max(x0, x1) && o.y >= Math.min(y0, y1) && o.y <= Math.max(y0, y1))){
+    var l1 = lineLength(x, y, x0, y0), l2 = lineLength(x, y, x1, y1);
+    return l1 > l2 ? l2 : l1;
+  }
+  else {
+    var a = y0 - y1, b = x1 - x0, c = x0 * y1 - y0 * x1;
+    return Math.abs(a * x + b * y + c) / Math.sqrt(a * a + b * b);
+  }
+};
+
+
+function getNormPointOnLine(bx,by,ex,ey,px,py)
+{
+	//take inverse of slope, then solve for intersection of real line with ssss as offset
+	var dydx = (ey-by)/(ex-bx);
+	dydx = -(1/dydx)
+	console.log(dydx);
+	//var dist = dotLineLength(bx,by,ex,ey,px,py);
+	var dist = 10;
+	var pny = dydx*dist + py;
+	var pnx = px + (pny - py)/dydx;
+	
+	// y = mx +b
+	// x = (y - b)/m
+	return [pnx,pny];
+}
+
+function lineDistance( x1,y1, x2,y2 )
+{
+  var xs = 0;
+  var ys = 0;
+
+  xs = x2 - x1;
+  xs = xs * xs;
+
+  ys = y2 - y1;
+  ys = ys * ys;
+
+  return Math.sqrt( xs + ys );
+}
+
+function predict(bx,by,ex,ey,steps)
+{
+	var dx = (ex-bx);
+	var dy = (ey-by);
+	var rx =ex+dx*steps;
+	var ry = ey+dy*steps; 
+	return [rx,ry];
+}
+
+function addToLine(nx,ny){
+  // get the canvas element using the DOM
+  var canvas = document.getElementById('mycanvas');
+  if (canvas.getContext){
+  	trail.push([nx,ny]);
+  	if(trail.length >= max_points)
+  	{
+  		trail.splice(0,1);//Remove from front of list
+  	}
+    // use getContext to use the canvas for drawing
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Filled triangle
+    /*Possible measurements
+     * Draw a line from the beginning to the end, measure distance from that line from each point.
+     * Use each point as a linear predictor of the next... mwe betta
+     * 
+     */
+    
+    ctx.strokeStyle = 'blue';
+    ctx.lineWidth = 1;
+    var bx = 0;
+    var by = 0;
+    var ex = 0;
+    var ey = 0;
+    if(trail.length >= 2){
+    	bx = trail[0][0];
+	    by = trail[0][1];
+	    ex = trail[trail.length-1][0];
+	    ey = trail[trail.length-1][1];
+	    // ctx.beginPath();
+	    // ctx.moveTo(bx,by);
+	    // ctx.lineTo(ex,ey);
+	    // ctx.stroke();   
+	}
+	
+	ctx.strokeStyle = 'red';
+	// if(bx && by)
+	// {
+		// for(var i in trail)//go through each point in trail and draw a line
+        // {
+        	// var px = trail[i][0];
+        	// var py = trail[i][1];
+        	// ctx.beginPath();
+		    // ctx.moveTo(px,py);
+		    // var normp = getNormPointOnLine(bx,by,ex,ey,px,py);
+		    // ctx.lineTo(normp[0],normp[1]);
+		    // ctx.stroke();
+        // }
+	// }
+	var total_real = 0
+	var total_dist = 0;
+	var steps = 10;
+	if(bx && by)
+	{
+		for(var i in trail)//go through each point in trail and draw a line
+        {
+        	i = parseInt(i);
+        	//console.log("trailtime");
+        	if(i == 0)//skip first and look back
+        	{
+        		continue;
+        	}
+        	var bx = trail[i-1][0];
+        	var by = trail[i-1][1];
+        	var ex = trail[i][0];
+        	var ey = trail[i][1]; 
+        	ctx.beginPath();
+		    ctx.moveTo(bx,by);
+		    var normp = predict(bx,by,ex,ey,steps);
+		    ctx.lineTo(normp[0],normp[1]);
+		    ctx.stroke();
+		    //console.log(i);
+		    //console.log("trailtime 2 "+i+"  "+trail.length);
+		    if(i+steps<trail.length)//measure accuracy of prediction
+		    {
+		    	var nx = trail[i+steps][0];
+        	    var ny = trail[i+steps][1];
+        	    //console.log("trailtime ->"+nx + " "+ " "+ny+"    "+normp[0]+" "+normp[1]);
+        	    dist = lineDistance(nx,ny,normp[0],normp[1]);
+        	    total_dist += dist;
+        	    total_real += lineDistance(nx,ny,bx,by);
+        	    //console.log(dist)
+        	    
+		    }
+		    //console.log("trailtime 3");
+		    
+		    //console.log("stroke");
+        }
+        //normalize by total distance plus a minimum
+        total_dist = total_dist/(total_real+2)
+        //total_dist = total_dist/(lineDistance(bx,by,ex,ey)+10);
+        // total_dist -= 3;
+        // total_dist = Math.max(total_dist,0);
+        // total_dist = Math.min(total_dist,15);
+        // total_dist = total_dist/15;
+        //empirical testing shows .2 to 1.5 is a pretty good scale
+         total_dist = Math.max(total_dist,.2);
+         total_dist -= .2;
+         total_dist = Math.min(total_dist,1);
+         total_dist = total_dist/1;
+        //$("#direct").html("totaldist:"+total_dist)
+        $("#bar").html(Math.floor(total_dist*100)+"");
+        $("#bar").css("width",Math.floor(total_dist*100)+"%")
+	}
+    
+    
+    ctx.strokeStyle = 'green';//show actual path on top
+    ctx.lineWidth=2;
+    var first = 1;
+    for(var i in trail)//go through each point in trail and draw a line
+    {
+    	if(first)
+    	{
+    		ctx.beginPath();
+    		ctx.moveTo(trail[i][0],trail[i][1]);
+    		first = 0;
+    	}
+    	ctx.lineTo(trail[i][0],trail[i][1]);
+    }
+    ctx.stroke();
+    
+   }
+  
+}
+
+function drawShape(){
+  // get the canvas element using the DOM
+  var canvas = document.getElementById('mycanvas');
+ 
+  // Make sure we don't execute when canvas isn't supported
+  if (canvas.getContext){
+ 
+    // use getContext to use the canvas for drawing
+    var ctx = canvas.getContext('2d');
+ 
+    // Filled triangle
+    ctx.beginPath();
+    ctx.moveTo(25,25);
+    ctx.lineTo(105,25);
+    ctx.lineTo(25,105);
+    ctx.fill();
+    
+    // Stroked triangle
+    ctx.beginPath();
+    ctx.moveTo(125,125);
+    ctx.lineTo(125,45);
+    ctx.lineTo(45,125);
+    ctx.closePath();
+    ctx.stroke();
+ 
+  } else {
+    alert('You need Safari or Firefox 1.5+ to see this demo.');
+  }
+}
+
+
+$(document).ready(function(){
+	drawShape();
+   $(document).mousemove(function(e){
+      //console.log(e.pageX +', '+ e.pageY);
+      addToLine(e.pageX,e.pageY);
+   }); 
+   
+   $("#see-slider").slider({
+  });
+})
+
+</script>
+</head>
+<body>
+	
+   <canvas id="mycanvas" width="1024" height="768"></canvas>
+   <div class="progresslineleft">Direct&nbsp;</div> <div class="progressbar"><div id="bar" style="width:44%">44</div></div> <div class="progresslineright">&nbsp;Indirect</div>
+   <h1 id="direct"></h1>
+</body>
+</html>
