@@ -1,7 +1,6 @@
 import processing.opengl.*;
 
 
-ParticleSystem ps;
 LabanSystem ls;
 
 import java.util.Iterator;
@@ -61,10 +60,10 @@ class LabanLine {
 
   // Method to display
   void display() {
-    stroke(255, 255);
-    fill(255, 255);
+    stroke(0, 255, 0, 255);
+    //fill(255, 255);
     ellipse(location.x, location.y, 8, 8);
-
+    stroke(255, 255, 255, 255);
     int ax = 50;
     int ay = 50;
 
@@ -72,12 +71,49 @@ class LabanLine {
 
     line(location.x, location.y, location.x+range, location.y);
 
-    //stroke(255, 102, 0);
-    //curve(location.x+50, location.y+50, location.x-25, location.y+25,  location.x, location.y, location.x, location.y);
-    //stroke(0); 
-    //curve(5, 26, 73, 24, 73, 61, 15, 65); 
-    //stroke(255, 102, 0);
-    //curve(73, 24, 73, 61, 15, 65, 15, 65);
+    float dist = range;
+    float delta = 150;
+    PVector now = new PVector();
+    PVector last = new PVector();
+    last.set(location);
+    now.set(location);
+
+    while (dist > 0)
+    {
+      //stroke(0, 0, 255, 255);
+      
+
+      //move the now
+      now.x += delta;
+//      now.y += delta;
+
+      
+
+      dist -= delta;
+      //line(last.x, last.y, now.x, now.y);
+      
+      PVector a1 = PVector.mult( PVector.add(now, last), .5);
+      PVector a2 = PVector.mult( PVector.add(now, last), .5);
+      a1.y -= 100*indirectness;
+      a2.y += 100*indirectness;
+      
+      stroke(0, 255, 255, 255);
+      ellipse(a1.x, a1.y, 5, 5);
+
+      stroke(255, 200, 24, 255);
+      ellipse(a2.x, a2.y, 5, 5);
+
+      stroke(255, 50, 50, 255);
+      bezier( last.x, last.y,
+              a1.x-20, a1.y, 
+              a2.x+20, a2.y,
+              now.x, now.y);
+      stroke(255, 50, 50, 255);
+      ellipse(now.x, now.y, 9, 9);
+      ellipse(last.x, last.y, 9, 9);
+      last.set(now);
+      //break;
+    }
   }
 
   // Is the particle still useful?
@@ -120,89 +156,6 @@ class LabanSystem {
       if (p.isDead()) {
         it.remove();
       }
-    }
-  }
-}
-
-class ParticleSystem {
-  ArrayList<Particle> particles;
-  PVector origin;
-
-  ParticleSystem(PVector location) {
-    origin = location.get();
-    particles = new ArrayList<Particle>();
-  }
-
-  void addParticle() {
-    particles.add(new Particle(origin));
-  }
-
-  void run() {
-    Iterator<Particle> it = particles.iterator();
-    while (it.hasNext ()) {
-      Particle p = it.next();
-      p.run();
-      if (p.isDead()) {
-        it.remove();
-      }
-    }
-  }
-}
-
-
-
-// A simple Particle class
-
-class Particle {
-  PVector location;
-  PVector velocity;
-  PVector acceleration;
-  float lifespan;
-
-  Particle(PVector l) {
-    acceleration = new PVector(0, 0.05);
-    velocity = new PVector(random(-3, 1), random(-2, 0));
-    location = l.get();
-    lifespan = 120.0;
-  }
-
-  void run() {
-    update();
-    display();
-  }
-
-  // Method to update location
-  void update() {
-    velocity.add(acceleration);
-    location.add(velocity);
-    lifespan -= 1.0;
-  }
-
-  // Method to display
-  void display() {
-    stroke(255, lifespan);
-    fill(255, lifespan);
-    ellipse(location.x, location.y, 8, 8);
-
-    int ax = 50;
-    int ay = 50;
-
-    noFill();
-    stroke(255, 102, 0);
-    curve(location.x+50, location.y+50, location.x-25, location.y+25, location.x, location.y, location.x, location.y);
-    //stroke(0); 
-    //curve(5, 26, 73, 24, 73, 61, 15, 65); 
-    //stroke(255, 102, 0);
-    //curve(73, 24, 73, 61, 15, 65, 15, 65);
-  }
-
-  // Is the particle still useful?
-  boolean isDead() {
-    if (lifespan < 0.0) {
-      return true;
-    } 
-    else {
-      return false;
     }
   }
 }
