@@ -1,6 +1,5 @@
 import processing.opengl.*;
 
-
 LabanSystem ls;
 
 import java.util.Iterator;
@@ -11,10 +10,16 @@ void setup() {
   //ps = new ParticleSystem(new PVector(width/10,50));
   ls = new LabanSystem(new PVector(width/10, 30));
   //ls.addLine();
+  
+  
+  ls.addLine(new PVector(0, .5*300), .5);
+  
+  /*
   for (float d=0; d<01.1; d+=.1)
   {
     ls.addLine(new PVector(0, d*300), d);
   }
+  */
 }
 
 void draw() {
@@ -36,6 +41,7 @@ class LabanLine {
   //float lifespan;
   float indirectness;
   float range;
+  float frames = 0;
 
   LabanLine(PVector l, float indirectness) {
     //acceleration = new PVector(0,0.05);
@@ -56,10 +62,17 @@ class LabanLine {
     //velocity.add(acceleration);
     //location.add(velocity);
     //lifespan -= 1.0;
+    frames += 1;
+    indirectness = sin(frames*.01)*.5 +.5;//go from 0 to 1 and back
+    if(indirectness > 1)
+       indirectness = 0;
   }
 
   // Method to display
   void display() {
+    
+    text("lev"+indirectness,10,10);
+    
     stroke(0, 255, 0, 255);
     //fill(255, 255);
     ellipse(location.x, location.y, 8, 8);
@@ -72,16 +85,18 @@ class LabanLine {
     line(location.x, location.y, location.x+range, location.y);
 
     float dist = range;
-    float delta = 150;
+    float delta = 50;
+    float max_height = 100;
     PVector now = new PVector();
     PVector last = new PVector();
     last.set(location);
     now.set(location);
 
+    float direction = 1;
     while (dist > 0)
     {
       //stroke(0, 0, 255, 255);
-      
+      direction = direction*-1;
 
       //move the now
       now.x += delta;
@@ -94,8 +109,8 @@ class LabanLine {
       
       PVector a1 = PVector.mult( PVector.add(now, last), .5);
       PVector a2 = PVector.mult( PVector.add(now, last), .5);
-      a1.y -= 100*indirectness;
-      a2.y += 100*indirectness;
+      a1.y += max_height*indirectness*direction;
+      a2.y += max_height*indirectness*direction;
       
       stroke(0, 255, 255, 255);
       ellipse(a1.x, a1.y, 5, 5);
@@ -105,8 +120,8 @@ class LabanLine {
 
       stroke(255, 50, 50, 255);
       bezier( last.x, last.y,
-              a1.x-20, a1.y, 
-              a2.x+20, a2.y,
+              a1.x, a1.y, 
+              a2.x, a2.y,
               now.x, now.y);
       stroke(255, 50, 50, 255);
       ellipse(now.x, now.y, 9, 9);
