@@ -5,7 +5,7 @@ LabanSystem ls;
 import java.util.Iterator;
 
 void setup() {
-  size(640, 360);
+  size(640, 480);
   smooth();
   //ps = new ParticleSystem(new PVector(width/10,50));
   ls = new LabanSystem(new PVector(width/10, 30));
@@ -67,11 +67,48 @@ class LabanLine {
     if(indirectness > 1)
        indirectness = 0;
   }
+  
+  PVector between(PVector a, PVector b, float t)
+  {
+    PVector delta = PVector.sub(b,a);
+    return PVector.add(a,PVector.mult(delta,t)); 
+  }
 
+//the intuition here is to draw tighter and tigher curves moving in by 1/6 each time.
+//
+  void filligree(PVector start, PVector end, float turns)
+  {   
+    stroke(255, 50, 50, 255);
+    ellipse(start.x, start.y, 9, 9);
+    ellipse(end.x, end.y, 9, 9);
+    while(turns > 0)
+    {
+      if(turns <= .5)
+      {
+        PVector c1 = between(start, end, 0);
+        PVector c2 = between(start, end, 1);
+        c1.y+=range*turns;
+        c2.y+=range*turns;
+        stroke(0, 255, 255, 255);
+        ellipse(c1.x, c1.y, 5, 5);
+        ellipse(c2.x, c2.y, 5, 5);
+        
+        bezier( start.x, start.y,
+              c1.x, c1.y, 
+              c2.x, c2.y,
+              end.x, end.y);
+              //arc f,f,f,f,f,f,i
+      
+        break;
+      }
+      turns -= .5;
+    }
+    
+  }
   // Method to display
   void display() {
     
-    text("lev"+indirectness,10,10);
+    text("lev:"+indirectness,10,10);
     
     stroke(0, 255, 0, 255);
     //fill(255, 255);
@@ -91,19 +128,19 @@ class LabanLine {
     PVector last = new PVector();
     last.set(location);
     now.set(location);
+    now.x += range;
 
+    filligree(last,now,.5);
+    
+    /*
     float direction = 1;
     while (dist > 0)
     {
       //stroke(0, 0, 255, 255);
       direction = direction*-1;
-
       //move the now
       now.x += delta;
 //      now.y += delta;
-
-      
-
       dist -= delta;
       //line(last.x, last.y, now.x, now.y);
       
@@ -129,7 +166,9 @@ class LabanLine {
       last.set(now);
       //break;
     }
+    */
   }
+  
 
   // Is the particle still useful?
   boolean isDead() {
