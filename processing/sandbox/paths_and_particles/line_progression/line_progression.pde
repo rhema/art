@@ -76,32 +76,52 @@ class LabanLine {
 
 //the intuition here is to draw tighter and tigher curves moving in by 1/6 each time.
 //
-  void filligree(PVector start, PVector end, float turns)
-  {   
+  void filligree(PVector startOriginal, PVector endOriginal, float turns)
+  {
+    float takeIn = 1.0/6.0;
+    //don't modify contents of vectors
+    PVector start = (new PVector());
+    start.set(startOriginal);
+    PVector end = (new PVector());
+    end.set(endOriginal);
+    
     stroke(255, 50, 50, 255);
     ellipse(start.x, start.y, 9, 9);
     ellipse(end.x, end.y, 9, 9);
+    
+    
+    float tempRange = range;
     while(turns > 0)
     {
+      
+      PVector c1 = between(start, end, 0);
+      PVector c2 = between(start, end, 1);
+      float direction = 1;
+      if(int(turns/.5)%2 == 1)
+         direction = -1;
+      c1.y+=tempRange*min(turns,1)*direction;
+      c2.y+=tempRange*min(turns,1)*direction;
+      stroke(0, 255, 255, 255);
+      ellipse(c1.x, c1.y, 5, 5);
+      ellipse(c2.x, c2.y, 5, 5);
+      
+      bezier( start.x, start.y,
+            c1.x, c1.y, 
+            c2.x, c2.y,
+            end.x, end.y);
+            //arc f,f,f,f,f,f,i
+    
       if(turns <= .5)
       {
-        PVector c1 = between(start, end, 0);
-        PVector c2 = between(start, end, 1);
-        c1.y+=range*turns;
-        c2.y+=range*turns;
-        stroke(0, 255, 255, 255);
-        ellipse(c1.x, c1.y, 5, 5);
-        ellipse(c2.x, c2.y, 5, 5);
-        
-        bezier( start.x, start.y,
-              c1.x, c1.y, 
-              c2.x, c2.y,
-              end.x, end.y);
-              //arc f,f,f,f,f,f,i
-      
         break;
       }
+      
       turns -= .5;
+      PVector tempStart = new PVector();
+      tempStart.set(start);
+      start.set(end);
+      end = between(tempStart,end,takeIn);//starts at the last end
+      tempRange -= tempRange*takeIn;
     }
     
   }
@@ -130,7 +150,7 @@ class LabanLine {
     now.set(location);
     now.x += range;
 
-    filligree(last,now,.5);
+    filligree(last,now,2*indirectness);
     
     /*
     float direction = 1;
