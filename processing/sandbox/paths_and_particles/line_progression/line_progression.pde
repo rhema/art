@@ -6,15 +6,10 @@ import java.util.Iterator;
 PShape s;
 
 
-
-
-
-
-
 void setup() {
   size(640, 480);
   smooth();
-  s = loadShape("images/placeholder.svg");
+  s = loadShape("images/leaf1.svg");
   //ps = new ParticleSystem(new PVector(width/10,50));
   ls = new LabanSystem(new PVector(width/10, 30));
   //ls.addLine();
@@ -31,7 +26,7 @@ void setup() {
 }
 
 void draw() {
-  background(255,255,255);
+  background(100,100,100);
   //print("test");
   //ps.addParticle();
   //ps.run();
@@ -72,7 +67,7 @@ class LabanLine {
     //location.add(velocity);
     //lifespan -= 1.0;
     frames += 1;
-    indirectness = sin(frames*.01)*.5 +.5;//go from 0 to 1 and back
+    indirectness = max(sin(frames*.01)*.5 +.5,.05);//go from 0 to 1 and back
     if(indirectness > 1)
        indirectness = 0;
   }
@@ -85,6 +80,52 @@ class LabanLine {
 
 //the intuition here is to draw tighter and tigher curves moving in by 1/6 each time.
 //
+
+void spiral(PVector startOriginal, PVector endOriginal, float points, float turns)
+{
+  //start on edge... work inwardly
+  
+  PVector start = (new PVector());
+  PVector end = (new PVector());
+  
+  float r = dist(startOriginal.x,startOriginal.y,endOriginal.x,endOriginal.y)/2;
+  PVector center = between(startOriginal,endOriginal,.5);
+  float totalAngluarDist = 2*PI*turns;
+  float angleShrink = totalAngluarDist/points;
+  float radialShrink = r/points;
+  float angle = PI/2;
+  
+  stroke(25, 200, 25, 255);
+  while(r > 0)
+  {
+    start.x = center.x+r*sin(angle);
+    start.y = center.y+r*cos(angle);
+    
+    r -= radialShrink;
+    angle += angleShrink;
+    
+    end.x = center.x+r*sin(angle);
+    end.y = center.y+r*cos(angle);
+    
+    line(start.x,start.y, end.x,end.y);
+//    pushMatrix();
+//    translate(start.x, start.y);
+//    rotate(angle);
+//    s.disableStyle();
+//    fill(150);
+//    shape(s,-40,-40, 80, 80);  
+//    popMatrix();
+
+  }
+  //for some number of turns...
+  //float turns = 2*10*PI;
+  //tunrns is total radial distance
+  
+  
+  
+}
+
+
   void filligree(PVector startOriginal, PVector endOriginal, float turns)
   {
     float takeIn = 1.0/4.0;
@@ -159,8 +200,8 @@ class LabanLine {
     last.set(location);
     now.set(location);
     now.x += range;
-
-    filligree(last,now,10*indirectness);
+    spiral(last,now,30*indirectness,5*indirectness*indirectness);
+    //filligree(last,now,10*indirectness);
     
     /*
     float direction = 1;
