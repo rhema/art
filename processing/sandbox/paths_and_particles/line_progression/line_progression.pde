@@ -36,7 +36,7 @@ void draw() {
   //ps.addParticle();
   //ps.run();
   ls.run();
-  shape(s, 50, 50, 80, 80);
+  //shape(s, 50, 50, 80, 80);
 }
 
 
@@ -100,13 +100,14 @@ class LabanLine {
     
     
     float tempRange = range;
+    float turnsOffset = int(turns/.5)%2;
     while(turns > 0)
     {
       
       PVector c1 = between(start, end, 0);
       PVector c2 = between(start, end, 1);
       float direction = 1;
-      if(int(turns/.5)%2 == 1)
+      if(int( turns/.5 + turnsOffset)%2 == 1)
          direction = -1;
       c1.y+=tempRange*min(turns,1)*direction;
       c2.y+=tempRange*min(turns,1)*direction;
@@ -159,7 +160,7 @@ class LabanLine {
     now.set(location);
     now.x += range;
 
-    filligree(last,now,2*indirectness);
+    filligree(last,now,10*indirectness);
     
     /*
     float direction = 1;
