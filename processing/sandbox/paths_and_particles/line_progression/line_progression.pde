@@ -3,10 +3,18 @@ import processing.opengl.*;
 LabanSystem ls;
 
 import java.util.Iterator;
+PShape s;
+
+
+
+
+
+
 
 void setup() {
   size(640, 480);
   smooth();
+  s = loadShape("images/placeholder.svg");
   //ps = new ParticleSystem(new PVector(width/10,50));
   ls = new LabanSystem(new PVector(width/10, 30));
   //ls.addLine();
@@ -23,11 +31,12 @@ void setup() {
 }
 
 void draw() {
-  background(0);
+  background(255,255,255);
   //print("test");
   //ps.addParticle();
   //ps.run();
   ls.run();
+  shape(s, 50, 50, 80, 80);
 }
 
 
@@ -78,7 +87,7 @@ class LabanLine {
 //
   void filligree(PVector startOriginal, PVector endOriginal, float turns)
   {
-    float takeIn = 1.0/6.0;
+    float takeIn = 1.0/4.0;
     //don't modify contents of vectors
     PVector start = (new PVector());
     start.set(startOriginal);
