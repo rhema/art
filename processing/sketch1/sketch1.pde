@@ -1,8 +1,12 @@
 DanceBox db = null;
 
+Random rnums = new Random();
+
+
 float indirectness = .3;
 LabanSystem ls;
 FastConvexHull hm = new FastConvexHull();
+Vector<PVector> conv = new Vector<PVector>();
 
 PVector root_position = new PVector(0,0,0);
 PVector rootPOld = new PVector(0,0);
@@ -15,7 +19,8 @@ Vector<PShape> leafs = new Vector<PShape>();
 
 
 void setup() {
-  size(640, 480);
+  //size(640, 480);
+  size(displayWidth, displayHeight);
   initBox();
   ls = new LabanSystem(new PVector(0, 0));
   for(int i=0; i<21; i++)
@@ -25,7 +30,7 @@ void setup() {
   }
   initLeafs();
   thread("feedMeData");
-  //size(displayWidth, displayHeight);
+  
 }
 
 void initLeafs()
@@ -52,7 +57,21 @@ void triggerParticles()
   PVector v = new PVector(rootP.x-rootPOld.x, rootP.y-rootPOld.y);
   v.mult(.5);
   PVector a = new PVector(0,0);
-  ls.addLine(db.center, indirectness, v,a);
+  PVector start = new PVector(0,0);
+  if(conv.size() > 0)//make random point on outside be the start point
+  {
+    int num = abs(rnums.nextInt());
+    int number_on_conv = conv.size();
+    int index = num%(conv.size()-1);
+    print("Count,"+number_on_conv+" rand,"+num+" picked,"+index);
+    start.set(conv.get(index));
+    
+  }
+  else
+  {
+    start.set(db.center);
+  }
+  ls.addLine(start, indirectness, v,a);
 }
 
 void key_controler()
@@ -136,7 +155,17 @@ class DanceBox//just a visualization?
        ellipse(p.x,p.y,3,3);
      }
      
-     Vector<PVector> conv = hm.getConvexHull(all_positions_p);
+     conv = hm.getConvexHull(all_positions_p);
+     float expansionFactor = 1 + 4*indirectness;
+          for(PVector p:conv)
+     {
+       p.x -= rootP.x;
+       p.y -= rootP.y;
+       p.x *= expansionFactor;
+       p.y *= expansionFactor;
+       p.x += rootP.x;
+       p.y += rootP.y;
+     }
      PVector oldp = conv.get(conv.size()-1);
      for(PVector p:conv)
      {

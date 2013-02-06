@@ -2,7 +2,6 @@ import processing.opengl.*;
 import java.util.Random;
 
 
-Random rnums = new Random();
 
 import java.util.Iterator;
 PShape s;
