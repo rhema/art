@@ -3,10 +3,13 @@ DanceBox db = null;
 float indirectness = .3;
 LabanSystem ls;
 
+PVector root_position = new PVector(0,0,0);
+
 void setup() {
   size(640, 480);
   initBox();
   ls = new LabanSystem(new PVector(0, 0));
+  thread("feedMeData");
   //size(displayWidth, displayHeight);
 }
 
@@ -67,6 +70,8 @@ class DanceBox//just a visualization?
    
    void display()
    {
+     center.x = root_position.x*300+500;
+     center.y = root_position.z*400+400;
      //show an x8
      stroke(255,255,255);
      color(1);
