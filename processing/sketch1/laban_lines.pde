@@ -16,6 +16,10 @@ class LabanSystem {
   void addLine(PVector offset, float indirectness) {
     lines.add(new LabanLine(PVector.add(origin, offset), indirectness));
   }
+  
+  void addLine(PVector offset, float indirectness, PVector v, PVector a) {
+    lines.add(new LabanLine(PVector.add(origin, offset), indirectness,v,a));
+  }
 
   void addLine() {
     float n = 0;
@@ -53,11 +57,16 @@ class LabanLine {
     indirectness = min(1,indirectness);
     acceleration = new PVector(0,0.05);
     velocity = new PVector(random(-3,1),random(-2,0));
-    lifespan = 95.0;
+    lifespan = 60.0;
     this.indirectness = indirectness;
     range = 50;
     l.x -= range*.5;
     location = l.get();
+  }
+  LabanLine(PVector l, float indirectness, PVector v, PVector a) {
+    this(l,indirectness);
+    acceleration = a;
+    velocity = v;
   }
 
   void run() {
