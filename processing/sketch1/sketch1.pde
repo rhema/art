@@ -8,6 +8,8 @@ PVector root_position = new PVector(0,0,0);
 PVector rootPOld = new PVector(0,0);
 PVector rootP = new PVector(0,0);
 Vector<PVector> all_positions = new Vector<PVector>(21);
+Vector<PVector> all_positions_p = new Vector<PVector>(21);
+
 
 Vector<PShape> leafs = new Vector<PShape>();
 
@@ -17,7 +19,10 @@ void setup() {
   initBox();
   ls = new LabanSystem(new PVector(0, 0));
   for(int i=0; i<21; i++)
+  {
     all_positions.add(new PVector(0,0,0));
+    all_positions_p.add(new PVector(0,0)); 
+  }
   initLeafs();
   thread("feedMeData");
   //size(displayWidth, displayHeight);
@@ -33,6 +38,12 @@ void dancerPositionAlteredEvent()
 {
   rootPOld = rootP;
   rootP = kinectToPV(root_position);
+  int i = 0;
+  for(PVector p:all_positions)
+  {
+    all_positions_p.get(i).set(kinectToPV(p));
+    i+=1;
+  }
 }
 
 void triggerParticles()
@@ -124,5 +135,14 @@ class DanceBox//just a visualization?
        PVector p = kinectToPV(pos);
        ellipse(p.x,p.y,3,3);
      }
+     
+     Vector<PVector> conv = hm.getConvexHull(all_positions_p);
+     PVector oldp = conv.get(conv.size()-1);
+     for(PVector p:conv)
+     {
+       line(oldp.x,oldp.y,p.x,p.y);
+       oldp = p;
+     }
+     
    }
 }
