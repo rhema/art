@@ -31,7 +31,7 @@ void feedMeData()
     
     if(socket == null)
        continue;
-    print("Listening...");
+    //print("Listening...");
     byte[] buf = new byte[4*62*100];
     DatagramPacket packet = new DatagramPacket(buf, buf.length);
     try
@@ -59,23 +59,23 @@ void feedMeData()
     */
     String received = new String(packet.getData(), 0, packet.getLength());
     String[] numbers = received.split(" ");
-    print(numbers[0]+"  "+" x:"+numbers[2]+ " y:" + numbers[3] + " z:" + numbers[4]+ "\n");
+    //print(numbers[0]+"  "+" x:"+numbers[2]+ " y:" + numbers[3] + " z:" + numbers[4]+ "\n");
         
     root_position.x = parseFloat(numbers[2]);
     root_position.y = parseFloat(numbers[3]);
     root_position.z = parseFloat(numbers[3]);
     
-    print("nums:"+numbers.length);
+    //print("nums:"+numbers.length);
   
     int pi = 0;
     for(int i = 2; i<21*3;i+=3)//set all positions
     {
-      print(pi);
-      print(all_positions.size()+"<-length ");
+//      print(pi);
+//      print(all_positions.size()+"<-length ");
       try{
-        print ("parsing1 " + numbers[i]);
-        print ("parsing2 " + numbers[i+1]);
-        print ("parsing3 " + numbers[i+2]);
+//        print ("parsing1 " + numbers[i]);
+//        print ("parsing2 " + numbers[i+1]);
+//        print ("parsing3 " + numbers[i+2]);
       all_positions.get(pi).x = parseFloat(numbers[i]);
       all_positions.get(pi).y = parseFloat(numbers[i+1]);
       all_positions.get(pi).z = parseFloat(numbers[i+2]);
@@ -83,7 +83,7 @@ void feedMeData()
       }
       catch(Exception e)
       {
-        print("oh well");
+        print("something broke...");
       }
     }
     dancerPositionAlteredEvent();
