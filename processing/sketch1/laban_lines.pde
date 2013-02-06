@@ -63,7 +63,7 @@ class LabanLine {
     velocity = new PVector(random(-3,1),random(-2,0));
     lifespan = 100.0;
     this.indirectness = indirectness;
-    range = 100;
+    range = 300;
     l.x -= range*.5;
     location = l.get();
     for(int i=0; i<3; i++)

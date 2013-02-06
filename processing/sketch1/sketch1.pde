@@ -139,7 +139,7 @@ void initBox()
 
 PVector kinectToPV(PVector k)
 {
-  PVector p = new PVector(k.x*100+400,-k.y*100+500);
+  PVector p = new PVector(k.x*200+400,-k.y*200+500);
   return p;
 }
 
