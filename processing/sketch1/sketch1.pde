@@ -2,11 +2,15 @@ DanceBox db = null;
 
 float indirectness = .3;
 LabanSystem ls;
+FastConvexHull hm = new FastConvexHull();
 
 PVector root_position = new PVector(0,0,0);
 PVector rootPOld = new PVector(0,0);
 PVector rootP = new PVector(0,0);
 Vector<PVector> all_positions = new Vector<PVector>(21);
+
+Vector<PShape> leafs = new Vector<PShape>();
+
 
 void setup() {
   size(640, 480);
@@ -14,8 +18,15 @@ void setup() {
   ls = new LabanSystem(new PVector(0, 0));
   for(int i=0; i<21; i++)
     all_positions.add(new PVector(0,0,0));
+  initLeafs();
   thread("feedMeData");
   //size(displayWidth, displayHeight);
+}
+
+void initLeafs()
+{
+  for(int i=1; i<14;i++)
+  leafs.add( loadShape("images/leaf"+i+".svg"));
 }
 
 void dancerPositionAlteredEvent()
@@ -28,6 +39,7 @@ void triggerParticles()
 {
   print("triggering particles");
   PVector v = new PVector(rootP.x-rootPOld.x, rootP.y-rootPOld.y);
+  v.mult(.5);
   PVector a = new PVector(0,0);
   ls.addLine(db.center, indirectness, v,a);
 }
@@ -101,12 +113,12 @@ class DanceBox//just a visualization?
      stroke(255,255,255);
      color(1);
      float fac = indirectness+1;
-     line(center.x,center.y,center.x+.5*width,center.y+.5*height);
-     line(center.x,center.y,center.x-.5*width,center.y+.5*height);
-     line(center.x,center.y,center.x+.5*width,center.y-.5*height);
-     line(center.x,center.y,center.x-.5*width,center.y-.5*height);
-     noFill();
-     ellipse(center.x,center.y,width*fac,height*fac);
+//     line(center.x,center.y,center.x+.5*width,center.y+.5*height);
+//     line(center.x,center.y,center.x-.5*width,center.y+.5*height);
+//     line(center.x,center.y,center.x+.5*width,center.y-.5*height);
+//     line(center.x,center.y,center.x-.5*width,center.y-.5*height);
+//     noFill();
+//     ellipse(center.x,center.y,width*fac,height*fac);
      for(PVector pos:all_positions)
      {
        PVector p = kinectToPV(pos);

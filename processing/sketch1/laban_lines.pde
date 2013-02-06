@@ -1,5 +1,8 @@
 import processing.opengl.*;
+import java.util.Random;
 
+
+Random rnums = new Random();
 
 import java.util.Iterator;
 PShape s;
@@ -51,17 +54,20 @@ class LabanLine {
   float indirectness;
   float range;
   float frames = 0;
+  int[] leafOrder = new int[3];
 
   LabanLine(PVector l, float indirectness) {
     indirectness = max(0,indirectness);
     indirectness = min(1,indirectness);
     acceleration = new PVector(0,0.05);
     velocity = new PVector(random(-3,1),random(-2,0));
-    lifespan = 60.0;
+    lifespan = 100.0;
     this.indirectness = indirectness;
     range = 50;
     l.x -= range*.5;
     location = l.get();
+    for(int i=0; i<3; i++)
+      leafOrder[i] = rnums.nextInt()%leafs.size();
   }
   LabanLine(PVector l, float indirectness, PVector v, PVector a) {
     this(l,indirectness);
@@ -114,8 +120,10 @@ class LabanLine {
     float angle = PI/2;
     
     //stroke(25, 200, 25, 255);
+    int i = 0;
     while(r > 0)
     {
+      i+=1;
       start.x = center.x+r*sin(angle);
       start.y = center.y+r*cos(angle); 
       r -= radialShrink;
@@ -123,13 +131,15 @@ class LabanLine {
       end.x = center.x+r*sin(angle);
       end.y = center.y+r*cos(angle);    
       line(start.x,start.y, end.x,end.y);
-  //    pushMatrix();
-  //    translate(start.x, start.y);
-  //    rotate(angle);
-  //    s.disableStyle();
-  //    fill(150);
-  //    shape(s,-40,-40, 80, 80);  
-  //    popMatrix();
+      pushMatrix();
+      translate(start.x, start.y);
+      rotate(angle);
+      int lsize = 10; 
+      PShape s = leafs.get(i%3);
+      s.disableStyle();
+      fill(150);
+      shape(s,-lsize,-lsize, lsize, lsize);
+      popMatrix();
     }
   }
 
@@ -190,7 +200,7 @@ class LabanLine {
     last.set(location);
     now.set(location);
     now.x += range;
-    spiral(last,now,30*indirectness,5*indirectness*indirectness);
+    spiral(last,now,15*indirectness,4*indirectness*indirectness);
   }
 }
 
