@@ -42,6 +42,8 @@ void feedMeData()
       e.printStackTrace();
     } 
     // display response
+    
+    /* raw work....
     int[] n = new int[62];
     byte[] bytes = packet.getData();//prolly should make a byte list... bleh
     for(int i=0;i<62; i+=1)
@@ -52,9 +54,10 @@ void feedMeData()
            print(value);
         
     }
-    //String received = new String(packet.getData(), 0, packet.getLength());
-    
-    //System.out.println("data: " + received);
+    */
+    String received = new String(packet.getData(), 0, packet.getLength());
+    String[] numbers = received.split(" ");
+    print(numbers[0]+"  "+" x:"+numbers[2]+ " y:" + numbers[3] + " z:" + numbers[4]+ "\n");
         
   }
 }
