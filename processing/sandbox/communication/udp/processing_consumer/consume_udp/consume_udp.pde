@@ -30,7 +30,7 @@ void feedMeData()
     if(socket == null)
        continue;
     print("Listening...");
-    byte[] buf = new byte[256];
+    byte[] buf = new byte[4*62];
     DatagramPacket packet = new DatagramPacket(buf, buf.length);
     try
     {
@@ -42,8 +42,20 @@ void feedMeData()
       e.printStackTrace();
     } 
     // display response
-    String received = new String(packet.getData(), 0, packet.getLength());
-    System.out.println("data: " + received);     
+    int[] n = new int[62];
+    byte[] bytes = packet.getData();//prolly should make a byte list... bleh
+    for(int i=0;i<62; i+=1)
+    {
+      int value = ((bytes[i*4+0] & 0xFF) << 24) | ((bytes[i*4+1] & 0xFF) << 16)
+        | ((bytes[i*4+2] & 0xFF) << 8) | (bytes[i*4+3] & 0xFF);
+        if(i == 0)
+           print(value);
+        
+    }
+    //String received = new String(packet.getData(), 0, packet.getLength());
+    
+    //System.out.println("data: " + received);
+        
   }
 }
 
@@ -51,21 +63,3 @@ void draw() {
   background(100,100,100);
 }
 
- 
-
-class QuoteClient {
-     void blerp(String[] args) throws IOException {
-        if (args.length != 1) {
-             System.out.println("Usage: java QuoteClient <hostname>");
-             return;
-        }
-            // get a datagram socket
-        DatagramSocket socket = new DatagramSocket();
- 
-            // send request
-        byte[] buf = new byte[256];
-        InetAddress address = InetAddress.getByName(args[0]);
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
-        socket.send(packet);
-    }
-}
