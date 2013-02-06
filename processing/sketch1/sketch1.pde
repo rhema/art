@@ -39,10 +39,22 @@ void initLeafs()
   leafs.add( loadShape("images/leaf"+i+".svg"));
 }
 
+PVector velP = new PVector(0,0);
+PVector velPOld = new PVector(0,0);
+
 void dancerPositionAlteredEvent()
 {
   rootPOld = rootP;
   rootP = kinectToPV(root_position);
+//  velPOld.set(velP);
+//velP.set(rootPOld);
+//velP.sub(rootP);
+//  PVector accel = new PVector(0,0);
+//  accel.set(velPOld);
+//  accel.sub(velP);
+//  print("eahhhhh....");
+//  print(accel);
+  
   int i = 0;
   for(PVector p:all_positions)
   {
@@ -51,13 +63,24 @@ void dancerPositionAlteredEvent()
   }
 }
 
-void triggerParticles()
+PVector runningV = new PVector(0,0);
+  PVector between(PVector a, PVector b, float t)
+  {
+    PVector delta = PVector.sub(b,a);
+    return PVector.add(a,PVector.mult(delta,t)); 
+  }
+void triggerParticles(boolean really)
 {
   print("triggering particles");
-  PVector v = new PVector(rootP.x-rootPOld.x, rootP.y-rootPOld.y);
-  v.mult(.5);
+  //PVector v = new PVector(rootP.x-rootPOld.x, rootP.y-rootPOld.y);
+  //PVector a = new PVector(0,.1*(1-indirectness));
+  PVector v = new PVector(0,0);
   PVector a = new PVector(0,0);
   PVector start = new PVector(0,0);
+  runningV = between(runningV,v,.8);
+  print(runningV);
+  if(really == false && ! (abs(runningV.x) > 1.6))
+     return; 
   if(conv.size() > 0)//make random point on outside be the start point
   {
     int num = abs(rnums.nextInt());
@@ -65,13 +88,13 @@ void triggerParticles()
     int index = num%(conv.size()-1);
     print("Count,"+number_on_conv+" rand,"+num+" picked,"+index);
     start.set(conv.get(index));
-    
   }
   else
   {
     start.set(db.center);
   }
-  ls.addLine(start, indirectness, v,a);
+  print(runningV);
+  ls.addLine(start, indirectness, runningV,a);
 }
 
 void key_controler()
@@ -85,7 +108,7 @@ void key_controler()
   if(key == 's')
     indirectness -= .1;
   if(key == ' ')
-    triggerParticles();
+    triggerParticles(true);
 }
 
 void keyPressed()
@@ -103,9 +126,9 @@ void draw()
     db.display();
   }
   ls.run();
-  if(frame%30 == 0)
+  if(frame%4 == 0)
   {
-    triggerParticles();
+    triggerParticles(false);
   }
 }
 
@@ -116,7 +139,7 @@ void initBox()
 
 PVector kinectToPV(PVector k)
 {
-  PVector p = new PVector(k.x*100+200,-k.y*100+300);
+  PVector p = new PVector(k.x*100+400,-k.y*100+500);
   return p;
 }
 
