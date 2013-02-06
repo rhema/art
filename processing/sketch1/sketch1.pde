@@ -1,19 +1,49 @@
 DanceBox db = null;
 
 float indirectness = .3;
+LabanSystem ls;
 
 void setup() {
   size(640, 480);
   initBox();
+  ls = new LabanSystem(new PVector(0, 0));
   //size(displayWidth, displayHeight);
+}
+
+
+void triggerParticles()
+{
+  print("triggering particles");
+  ls.addLine(db.center, indirectness);
+}
+
+void key_controler()
+{
+  if(keyPressed)
+  {
+    print("key "+key+" was pressed");
+  }
+  if(key == 'w')
+    indirectness += .1;
+  if(key == 's')
+    indirectness -= .1;
+  if(key == ' ')
+    triggerParticles();
+}
+
+void keyPressed()
+{
+  key_controler();
 }
 
 void draw()
 {
+  background(0);
   if(db != null)
   {
     db.display();
   }
+  ls.run();
 }
 
 void initBox()
@@ -38,6 +68,8 @@ class DanceBox//just a visualization?
    void display()
    {
      //show an x8
+     stroke(255,255,255);
+     color(1);
      float fac = indirectness+1;
      line(center.x,center.y,center.x+.5*width,center.y+.5*height);
      line(center.x,center.y,center.x-.5*width,center.y+.5*height);

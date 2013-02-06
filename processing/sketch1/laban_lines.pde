@@ -1,28 +1,37 @@
 import processing.opengl.*;
 
-LabanSystem ls;
 
 import java.util.Iterator;
 PShape s;
 
+class LabanSystem {
+  ArrayList<LabanLine> lines;
+  PVector origin;
 
-void setupOLD() {
-  size(640, 480);
-  smooth();
-  s = loadShape("images/leaf1.svg");
-  //ps = new ParticleSystem(new PVector(width/10,50));
-  ls = new LabanSystem(new PVector(width/10, 30));
-  //ls.addLine();
-  
-  
-  ls.addLine(new PVector(0, .5*300), .5);
-  
-  /*
-  for (float d=0; d<01.1; d+=.1)
-  {
-    ls.addLine(new PVector(0, d*300), d);
+  LabanSystem(PVector location) {
+    origin = location.get();
+    lines = new ArrayList<LabanLine>();
   }
-  */
+
+  void addLine(PVector offset, float indirectness) {
+    lines.add(new LabanLine(PVector.add(origin, offset), indirectness));
+  }
+
+  void addLine() {
+    float n = 0;
+    lines.add(new LabanLine(origin, n));
+  }
+
+  void run() {
+    Iterator<LabanLine> it = lines.iterator();
+    while (it.hasNext ()) {
+      LabanLine p = it.next();
+      p.run();
+      if (p.isDead()) {
+        it.remove();
+      }
+    }
+  }
 }
 
 
@@ -32,20 +41,23 @@ void setupOLD() {
 
 class LabanLine {
   PVector location;
-  //PVector velocity;
-  //PVector acceleration;
-  //float lifespan;
+  PVector velocity;
+  PVector acceleration;
+  float lifespan;
   float indirectness;
   float range;
   float frames = 0;
 
   LabanLine(PVector l, float indirectness) {
-    //acceleration = new PVector(0,0.05);
-    //velocity = new PVector(random(-3,1),random(-2,0));
-    location = l.get();
-    //lifespan = 120.0;
+    indirectness = max(0,indirectness);
+    indirectness = min(1,indirectness);
+    acceleration = new PVector(0,0.05);
+    velocity = new PVector(random(-3,1),random(-2,0));
+    lifespan = 95.0;
     this.indirectness = indirectness;
-    range = 300;
+    range = 50;
+    l.x -= range*.5;
+    location = l.get();
   }
 
   void run() {
@@ -55,23 +67,23 @@ class LabanLine {
 
   // Method to update location
   void update() {
-    //velocity.add(acceleration);
-    //location.add(velocity);
-    //lifespan -= 1.0;
-    frames += 1;
-    indirectness = max(sin(frames*.01)*.5 +.5,.05);//go from 0 to 1 and back
-    if(indirectness > 1)
-       indirectness = 0;
+    velocity.add(acceleration);
+    location.add(velocity);
+    lifespan -= 1.0;
+    indirectness += .003;
+//    frames += 1;
+//    indirectness = max(sin(frames*.01)*.5 +.5,.05);//go from 0 to 1 and back
+//    if(indirectness > 1)
+//       indirectness = 0;
   }
   
     // Is the particle still useful?
   boolean isDead() {
-    //    if (lifespan < 0.0) {
-    //      return true;
-    //    } else {
-    //      return false;
-    //    }
-    return false;
+    if (lifespan < 0.0) {
+      return true;
+    } else {
+      return false;
+    }
   }
   
   PVector between(PVector a, PVector b, float t)
@@ -92,7 +104,7 @@ class LabanLine {
     float radialShrink = r/points;
     float angle = PI/2;
     
-    stroke(25, 200, 25, 255);
+    //stroke(25, 200, 25, 255);
     while(r > 0)
     {
       start.x = center.x+r*sin(angle);
@@ -159,9 +171,9 @@ class LabanLine {
   // Method to display
   void display() {
    // text("lev:"+indirectness,10,10);
-    stroke(0, 255, 0, 255);
-    ellipse(location.x, location.y, 8, 8);
-    stroke(255, 255, 255, 255);
+    //stroke(0, 255, 0, 255);
+    //ellipse(location.x, location.y, 8, 8);
+    //stroke(255, 255, 255, 255);
     noFill();
     //line(location.x, location.y, location.x+range, location.y);
     PVector now = new PVector();
@@ -176,33 +188,5 @@ class LabanLine {
 
 
 
-class LabanSystem {
-  ArrayList<LabanLine> lines;
-  PVector origin;
 
-  LabanSystem(PVector location) {
-    origin = location.get();
-    lines = new ArrayList<LabanLine>();
-  }
-
-  void addLine(PVector offset, float indirectness) {
-    lines.add(new LabanLine(PVector.add(origin, offset), indirectness));
-  }
-
-  void addLine() {
-    float n = 0;
-    lines.add(new LabanLine(origin, n));
-  }
-
-  void run() {
-    Iterator<LabanLine> it = lines.iterator();
-    while (it.hasNext ()) {
-      LabanLine p = it.next();
-      p.run();
-      if (p.isDead()) {
-        it.remove();
-      }
-    }
-  }
-}
 
