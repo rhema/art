@@ -1,8 +1,8 @@
+Boolean useBinary = true;//Use binary or raw format
+int incomingPort = 5005;
+
 DanceBox db = null;
-
 Random rnums = new Random();
-
-
 float indirectness = .3;
 LabanSystem ls;
 FastConvexHull hm = new FastConvexHull();
@@ -22,8 +22,14 @@ void setup() {
   //size(640, 480);
   size(displayWidth, displayHeight);
   initBox();
+  int points_in_skel = 21;
+  if(useBinary)
+  {
+    points_in_skel -= 1;
+  }
+  
   ls = new LabanSystem(new PVector(0, 0));
-  for(int i=0; i<21; i++)
+  for(int i=0; i<points_in_skel; i++)
   {
     all_positions.add(new PVector(0,0,0));
     all_positions_p.add(new PVector(0,0)); 
@@ -71,14 +77,14 @@ PVector runningV = new PVector(0,0);
   }
 void triggerParticles(boolean really)
 {
-  print("triggering particles");
+  //print("triggering particles");
   //PVector v = new PVector(rootP.x-rootPOld.x, rootP.y-rootPOld.y);
   //PVector a = new PVector(0,.1*(1-indirectness));
   PVector v = new PVector(0,0);
   PVector a = new PVector(0,0);
   PVector start = new PVector(0,0);
   runningV = between(runningV,v,.8);
-  print(runningV);
+  //print(runningV);
   if(really == false && ! (abs(runningV.x) > 1.6))
      return; 
   if(conv.size() > 0)//make random point on outside be the start point

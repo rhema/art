@@ -1,4 +1,4 @@
-import socket
+import socket#missing
 import time
 import random
 import load_data
@@ -15,7 +15,8 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 raw = load_data.get_raw_array()
 bin = load_data.get_bin_array()
 
-frames = raw
+frames = bin#raw
+print "lengths...",len(frames[0]);
 while True:
     for frame in frames:
         time.sleep(1.0/30.0)
