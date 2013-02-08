@@ -6,6 +6,29 @@ import java.util.Comparator;
 //from  https://code.google.com/p/convex-hull/source/browse/Convex+Hull/src/algorithms/FastConvexHull.java?r=4
 class FastConvexHull
 {
+        Vector<PVector> getConvexHullBox(List<PVector> points)
+        {
+           Vector<PVector> conv = getConvexHull(points);
+           Vector<PVector> ret = new Vector<PVector>();
+           float max_x = -1000000000;
+           float max_y = -1000000000;
+           float min_x = 1000000000;
+           float min_y = 1000000000;
+           for(PVector p:conv)
+           {
+             max_x = max(max_x,p.x);
+             max_y = max(max_y,p.y);
+             min_x = min(min_x,p.x);
+             min_y = min(min_y,p.y);
+           }
+           ret.add(new PVector(min_x,max_y));
+           ret.add(new PVector(max_x,max_y));
+           ret.add(new PVector(max_x,min_y));
+           ret.add(new PVector(min_x,min_y));
+           return ret;
+        }
+        
+        
         Vector<PVector> getConvexHull(List<PVector> points)
         {
           //convert to Points

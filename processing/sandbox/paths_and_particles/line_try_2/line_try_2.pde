@@ -75,7 +75,9 @@ class GrowLine {
   
   void curve2()
   {
-        stroke(255, 255, 255, 255);
+    stroke(255, 255, 255, 255);
+    ellipse(start.x,start.y,15,15);
+    ellipse(end.x,end.y,15,15);
     float d = PVector.dist(start,end);
     int np = 5;
     float tdelta = 1.0/((float)np);
@@ -110,6 +112,13 @@ class GrowLine {
       float ty = curveTangent(controlPoints.get(i-1).y, controlPoints.get(i).y, controlPoints.get(i+1).y, controlPoints.get(i+2).y, t);//like 4 of these...???
       int of = 1;
       line(controlPoints.get(i+of).x,controlPoints.get(i+of).y,controlPoints.get(i+of).x+tx,controlPoints.get(i+of).y+ty);
+      int lsize=25;
+      translate(controlPoints.get(i+of).x,controlPoints.get(i+of).y);
+      float rott = (new PVector(tx,ty)).heading()+(11*(PI/4.0));
+      rotate(rott);
+      shape(s,-lsize,-lsize, lsize, lsize);
+      rotate(-rott);
+      translate(-controlPoints.get(i+of).x,-controlPoints.get(i+of).y);
     }
     /*
     //generate some set of control point along the line...
@@ -139,7 +148,6 @@ class GrowLine {
       ellipse(coords[i], coords[i + 1], 3, 3);
     }
     */
-    
   }
   
   void guideLine()
@@ -152,8 +160,6 @@ class GrowLine {
   
   
   void display() {
-    //guideLine();
-    //curveTest();
     curve2();
   }
 }

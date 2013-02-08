@@ -13,6 +13,8 @@ PVector rootPOld = new PVector(0,0);
 PVector rootP = new PVector(0,0);
 Vector<PVector> all_positions = new Vector<PVector>(21);
 Vector<PVector> all_positions_p = new Vector<PVector>(21);
+Vector<GrowLine> box = new Vector<GrowLine>();
+
 
 
 Vector<PShape> leafs = new Vector<PShape>();
@@ -36,13 +38,15 @@ void setup() {
   }
   initLeafs();
   thread("feedMeData");
-  
 }
 
 void initLeafs()
 {
+  for(int i=0; i<4; i++)
+    box.add(new GrowLine(new PVector(0,0), new PVector(100,100)));
+  
   for(int i=1; i<14;i++)
-  leafs.add( loadShape("images/leaf"+i+".svg"));
+    leafs.add( loadShape("images/leaf"+i+".svg"));
 }
 
 PVector velP = new PVector(0,0);
@@ -184,7 +188,7 @@ class DanceBox//just a visualization?
        ellipse(p.x,p.y,3,3);
      }
      
-     conv = hm.getConvexHull(all_positions_p);
+     conv = hm.getConvexHullBox(all_positions_p);
      float expansionFactor = 1 + 4*indirectness;
           for(PVector p:conv)
      {
@@ -196,10 +200,19 @@ class DanceBox//just a visualization?
        p.y += rootP.y;
      }
      PVector oldp = conv.get(conv.size()-1);
+     int i = 0;
      for(PVector p:conv)
      {
-       line(oldp.x,oldp.y,p.x,p.y);
+       GrowLine g = box.get(i);//new GrowLine(new PVector(oldp.x,oldp.y), new PVector(p.x,p.y));
+       g.start.x = oldp.x;
+       g.start.y = oldp.y;
+       g.end.x = p.x;
+       g.end.y = p.y;
+       stroke(255,255,255,255);
+       g.display();
+       //line(oldp.x,oldp.y,p.x,p.y);
        oldp = p;
+       i+=1;
      }
      
    }
