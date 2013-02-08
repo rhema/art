@@ -75,6 +75,7 @@ class GrowLine {
   
   void curve2()
   {
+        stroke(255, 255, 255, 255);
     float d = PVector.dist(start,end);
     int np = 5;
     float tdelta = 1.0/((float)np);
@@ -84,7 +85,7 @@ class GrowLine {
     for(float t=0;t<=1;t+=tdelta)
     {
       PVector c1 = PVector.lerp(start,end,t);
-      c1.add(PVector.mult(PVector.random2D(),.09*d));
+      c1.add(PVector.mult(PVector.random2D(),.07*d));
       controlPoints.add(c1);
     }
     controlPoints.add(PVector.mult(end,1));
@@ -100,6 +101,16 @@ class GrowLine {
     }
     endShape();
     
+    //tangents...  mirror of earlier loop...
+    stroke(255, 25, 25, 255);
+    for(int i=2;i<controlPoints.size()-2; i++)
+    {
+      float t = tdelta*((float)i);
+      float tx = curveTangent(controlPoints.get(i-1).x, controlPoints.get(i).x, controlPoints.get(i+1).x, controlPoints.get(i+2).x, t);//like 4 of these...???
+      float ty = curveTangent(controlPoints.get(i-1).y, controlPoints.get(i).y, controlPoints.get(i+1).y, controlPoints.get(i+2).y, t);//like 4 of these...???
+      int of = 1;
+      line(controlPoints.get(i+of).x,controlPoints.get(i+of).y,controlPoints.get(i+of).x+tx,controlPoints.get(i+of).y+ty);
+    }
     /*
     //generate some set of control point along the line...
     int[ ] coords = {
