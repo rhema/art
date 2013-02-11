@@ -23,6 +23,7 @@ Vector<PShape> leafs = new Vector<PShape>();
 void setup() {
   //size(640, 480);
   size(displayWidth, displayHeight);
+  setupColors();
   initBox();
   int points_in_skel = 21;
   if(useBinary)
@@ -158,6 +159,7 @@ class DanceBox//just a visualization?
    PVector center;
    float width;
    float height;
+   color c;
    //maybe should be a box set
    
    DanceBox(PVector center, float width, float height)
@@ -165,6 +167,7 @@ class DanceBox//just a visualization?
      this.center = center;
      this.height = height;
      this.width = width;
+     c = getColor(.3);
    }
    
    void display()
@@ -208,7 +211,7 @@ class DanceBox//just a visualization?
        g.start.y = oldp.y;
        g.end.x = p.x;
        g.end.y = p.y;
-       stroke(255,255,255,255);
+       stroke(c);//255,255,255,255);
        g.display();
        //line(oldp.x,oldp.y,p.x,p.y);
        oldp = p;

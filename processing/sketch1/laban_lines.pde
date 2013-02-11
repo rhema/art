@@ -55,6 +55,7 @@ class LabanLine {
   float frames = 0;
   float angleOffset = 0;
   int[] leafOrder = new int[3];
+  color c;
 
   LabanLine(PVector l, float indirectness) {
     indirectness = max(0,indirectness);
@@ -71,6 +72,7 @@ class LabanLine {
   }
   LabanLine(PVector l, float indirectness, PVector v, PVector a) {
     this(l,indirectness);
+    c = getColor(indirectness);
     acceleration = a;
     velocity = v;
     angleOffset = rnums.nextFloat();
@@ -129,7 +131,9 @@ class LabanLine {
     translate(-location.x,-location.y);
     
     
-    stroke(25, 200, 25, ((int)(((float)lifespan/100.0))*255.0));
+    //stroke(25, 200, 25, ((int)(((float)lifespan/100.0))*255.0));
+    stroke(c);
+    fill(c);
     int i = 0;
     while(r > 0)
     {
@@ -147,8 +151,11 @@ class LabanLine {
       int lsize = 15; 
       PShape s = leafs.get(i%3);
       s.disableStyle();
-      stroke(25, 200, 25, (((float)lifespan/100.0))*255.0);
-      fill(25, 200, 25, (((float)lifespan/100.0))*255.0);
+      stroke(c);
+      fill(c);
+      //stroke(25, 200, 25, (((float)lifespan/100.0))*255.0);
+      //fill(25, 200, 25, (((float)lifespan/100.0))*255.0);
+      
       shape(s,-lsize,-lsize, lsize, lsize);
       popMatrix();
     }
@@ -221,11 +228,14 @@ class GrowLine {
   PVector start;
   PVector end;
   color c;
+  
   Vector<PVector> savedRandomPoints = new Vector<PVector>();
   GrowLine(PVector start, PVector end) {
+    
     this.start = start;
     this.end = end;
     c = color(255,255,255,255);
+    c = getColor(.6);
     for(int i=0;i<100;i++)
       savedRandomPoints.add(PVector.random2D());
   }
@@ -281,6 +291,7 @@ class GrowLine {
     endShape();
     
     //tangents...  mirror of earlier loop...
+    //draw one spiral
     
     for(int i=2;i<controlPoints.size()-2; i++)
     {
