@@ -4,7 +4,7 @@ import random
 import load_data
 
 UDP_IP = "127.0.0.1"#this machine
-UDP_PORT = 5005
+UDP_PORT = 7777
 MESSAGE = "Hello, World!"
  
 print "UDP target IP:", UDP_IP
@@ -19,6 +19,6 @@ frames = bin#raw
 print "lengths...",len(frames[0]);
 while True:
     for frame in frames:
-        time.sleep(1.0/30.0)
+        time.sleep(1.0/10.0)#1.0/30.0)
         MESSAGE = frame
         sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))

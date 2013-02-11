@@ -1,5 +1,5 @@
 Boolean useBinary = true;//Use binary or raw format
-int incomingPort = 5005;
+int incomingPort = 7777;
 
 DanceBox db = null;
 Random rnums = new Random();

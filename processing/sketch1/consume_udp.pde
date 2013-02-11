@@ -20,7 +20,7 @@ void feedMeData()
   InetAddress address = null;
   try
   {
-   socket = new DatagramSocket(incomingPort, InetAddress.getByName("127.0.0.1"));
+   socket = new DatagramSocket(incomingPort, InetAddress.getByName("0.0.0.0"));
     }
    catch (Exception se)
   {
