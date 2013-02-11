@@ -59,7 +59,10 @@ void draw()
     color currentcolor = colorarray[(int) random(0, colorlookup)];
     fill(currentcolor);
     rect(i*width/colorlookup,i*height/colorlookup,width/colorlookup,height/colorlookup);
-    
+      //strokeWeight(random(3, 10));
+  //stroke(currentcolor); // HSB Hue Saturation Brightness
+  //float rainbow_size = random(200, 270);
+  //ellipse(150, 350, rainbow_size, rainbow_size);
   }
 
 } 
