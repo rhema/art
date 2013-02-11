@@ -1,4 +1,4 @@
-
+// just click to see what the colors are
 color[] myColors;
 color[] colorarray=new color[10];
 //input will be the indirectness value
