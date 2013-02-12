@@ -3,7 +3,7 @@
 
 color[] colorarray=new color[12];
 
-float indirectness = random(0,1);
+float indirectness=random(0,1);
 int colorlookup;
 
 void setup()
@@ -12,6 +12,7 @@ size(640, 480);
 
 colorMode(HSB, 360, 100, 100); 
 //HSV values 
+//0 and 1 are direct colors
 colorarray[0]= color(0,0,0);
 colorarray[1]= color(200,1,83);
 //colors of aurora
@@ -54,10 +55,12 @@ colorlookup= int(indirectness*colorarray.length);
 
 void draw()
 {
+  //indirectness=mouseX/width;
   for(int i=0; i < colorlookup; i++)
   {
     color currentcolor = colorarray[(int) random(0, colorlookup)];
     fill(currentcolor);
+
     rect(i*width/colorlookup,i*height/colorlookup,width/colorlookup,height/colorlookup);
       //strokeWeight(random(3, 10));
   //stroke(currentcolor); // HSB Hue Saturation Brightness

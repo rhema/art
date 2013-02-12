@@ -21,8 +21,8 @@ Vector<PShape> leafs = new Vector<PShape>();
 
 
 void setup() {
-  //size(640, 480);
-  size(displayWidth, displayHeight);
+  size(640, 480);
+  //size(displayWidth, displayHeight);
   setupColors();
   initBox();
   int points_in_skel = 21;
