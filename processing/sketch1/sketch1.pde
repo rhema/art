@@ -4,6 +4,7 @@ int incomingPort = 7777;
 DanceBox db = null;
 Random rnums = new Random();
 float indirectness = .3;
+float next_indirectness = .3;
 LabanSystem ls;
 FastConvexHull hm = new FastConvexHull();
 Vector<PVector> conv = new Vector<PVector>();
@@ -115,11 +116,15 @@ void key_controler()
     print("key "+key+" was pressed");
   }
   if(key == 'w')
-    indirectness += .1;
+    next_indirectness += .1;
   if(key == 's')
-    indirectness -= .1;
+    next_indirectness -= .1;
   if(key == ' ')
     triggerParticles(true);
+  
+  if(next_indirectness <0.1)
+    next_indirectness = 0.1;
+   
 }
 
 void keyPressed()
@@ -130,6 +135,8 @@ void keyPressed()
 int frame = 0;
 void draw()
 {
+  float fac = .2;
+  indirectness = next_indirectness*fac + indirectness*(1.0-fac);
   frame += 1;
   background(0);
   if(db != null)

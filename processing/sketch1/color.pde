@@ -62,6 +62,8 @@ color getColor(float directness)//arg
 {
   //remakeColors(directness);
   //remakeColors(directness);
+  
+  
     
   return colorarray[(int) random(0, colorlookup)];
     

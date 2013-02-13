@@ -217,11 +217,13 @@ class LabanLine {
      float t, i, z;
      t=lifespan;
       noStroke();
-      for (i = 0; ++i < 5;) {
+      for (i = 0; ++i < 3;) {
         z = n(0.0,i) - t;
         z *= z / 99;
-        fill(n(7,i), n(8,i), n(9,i), min(60, sq(400 / z)));
-        ellipse(loc.x,loc.y, z, z);
+        fill(n(7,i), n(8,i), n(9,i), min(70, sq(300 / z)));
+        
+        float scale = 300;
+        ellipse(loc.x+(scale*(n(loc.x,i)/512.0)) - scale*.5,loc.y + (scale*(n(loc.x,i)/512.0)) - scale*.5, z, z);
       }
     }
 float n(float a, float i) {
