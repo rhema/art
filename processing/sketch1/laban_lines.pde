@@ -277,7 +277,7 @@ class GrowLine {
     //stroke(color(255,255,255,255));
     float d = PVector.dist(start,end);
     int np = 3+(int)((1+savedRandomPoints.get(2).x)*10.0);
-    println("NP IS "+np);
+    //println("NP IS "+np);
     float tdelta = 1.0/((float)np);
     Vector<PVector> controlPoints = new Vector<PVector>();
     controlPoints.add(PVector.mult(start,1));

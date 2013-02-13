@@ -137,10 +137,11 @@ void draw()
     db.display();
   }
   ls.run();
-  if(frame%4 == 0)
+  if(noise(frame) > .5 && frame%4==0)
   {
-    triggerParticles(false);
+    triggerParticles(true);
   }
+  println(noise(frame)+" perlin noise");
 }
 
 void initBox()
