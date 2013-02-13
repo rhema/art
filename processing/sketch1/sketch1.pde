@@ -43,7 +43,7 @@ void setup() {
 
 void initLeafs()
 {
-  for(int i=0; i<4; i++)
+  for(int i=0; i<16; i++)
     box.add(new GrowLine(new PVector(0,0), new PVector(100,100)));
   
   for(int i=1; i<14;i++)
@@ -202,8 +202,10 @@ class DanceBox//just a visualization?
        p.x += rootP.x;
        p.y += rootP.y;
      }
+     
      PVector oldp = conv.get(conv.size()-1);
      int i = 0;
+     
      for(PVector p:conv)
      {
        GrowLine g = box.get(i);//new GrowLine(new PVector(oldp.x,oldp.y), new PVector(p.x,p.y));
@@ -215,7 +217,7 @@ class DanceBox//just a visualization?
        g.display();
        //line(oldp.x,oldp.y,p.x,p.y);
        oldp = p;
-       i+=1;
+       i+=4;
      }
      
    }

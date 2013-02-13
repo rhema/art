@@ -231,12 +231,11 @@ class GrowLine {
   
   Vector<PVector> savedRandomPoints = new Vector<PVector>();
   GrowLine(PVector start, PVector end) {
-    
     this.start = start;
     this.end = end;
     c = color(255,255,255,255);
     c = getColor(.6);
-    for(int i=0;i<100;i++)
+    for(int i=0;i<200;i++)
       savedRandomPoints.add(PVector.random2D());
   }
 
@@ -260,7 +259,7 @@ class GrowLine {
     curve(c1.x,c1.y,start.x,start.y, end.x,end.y, c2.x,c2.y);
   }
   
-  void curve2()
+  void curve2(int offset)
   {
     stroke(c);
     float d = PVector.dist(start,end);
@@ -273,7 +272,7 @@ class GrowLine {
     for(float t=0;t<=1;t+=tdelta)
     {
       PVector c1 = PVector.lerp(start,end,t);
-      c1.add(PVector.mult(savedRandomPoints.get(i1),.07*d));
+      c1.add(PVector.mult(savedRandomPoints.get(i1+offset),.07*d));
       controlPoints.add(c1);
       i1+=1;
     }
@@ -300,7 +299,7 @@ class GrowLine {
       float ty = curveTangent(controlPoints.get(i-1).y, controlPoints.get(i).y, controlPoints.get(i+1).y, controlPoints.get(i+2).y, t);//like 4 of these...???
       int of = 1;
       //line(controlPoints.get(i+of).x,controlPoints.get(i+of).y,controlPoints.get(i+of).x+tx,controlPoints.get(i+of).y+ty);
-      int lsize=25;
+      int lsize=(int)((savedRandomPoints.get(i).y+1)*16.0);
       translate(controlPoints.get(i+of).x,controlPoints.get(i+of).y);
       float rott = (new PVector(tx,ty)).heading()+(11*(PI/4.0));
       rotate(rott);
@@ -358,8 +357,12 @@ class GrowLine {
   
   
   void display() {
-    curve2();
+    for(int i=0; i<3; i+=1)
+    {
+      curve2(i*30);
+    }
   }
+  
 }
 
 
