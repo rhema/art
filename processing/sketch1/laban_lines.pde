@@ -211,6 +211,24 @@ class LabanLine {
       tempRange -= tempRange*takeIn;
     }
   }
+  
+    
+ void accents(PVector loc) {
+     float t, i, z;
+     t=lifespan;
+      noStroke();
+      for (i = 0; ++i < 5;) {
+        z = n(0.0,i) - t;
+        z *= z / 99;
+        fill(n(7,i), n(8,i), n(9,i), min(60, sq(400 / z)));
+        ellipse(loc.x,loc.y, z, z);
+      }
+    }
+float n(float a, float i) {
+    return noise(lifespan / 2000 + a + i) * 512;
+}
+
+  
   // Method to display
   void display() {
    // text("lev:"+indirectness,10,10);
@@ -225,6 +243,7 @@ class LabanLine {
     now.set(location);
     now.x += range;
     spiral(last,now,45*indirectness,6*indirectness*indirectness,lifespan/100);
+    accents(location);
   }
 }
 
