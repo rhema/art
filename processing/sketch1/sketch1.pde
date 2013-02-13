@@ -141,7 +141,7 @@ void draw()
   {
     triggerParticles(true);
   }
-  println(noise(frame)+" perlin noise");
+  //println(noise(frame)+" perlin noise");
 }
 
 void initBox()

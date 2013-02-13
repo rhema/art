@@ -110,8 +110,13 @@ class LabanLine {
     return PVector.add(a,PVector.mult(delta,t)); 
   }
 
-  void spiral(PVector startOriginal, PVector endOriginal, float points, float turns)
+  void spiral(PVector startOriginal, PVector endOriginal, float points, float turns, float alpha)
   {
+    color c = this.c;
+    colorMode(RGB);
+    color alphaMask = color(255,255,255, (int)(alpha*255));
+    c = c&alphaMask;
+    
     strokeWeight(3);
     PVector start = (new PVector());
     PVector end = (new PVector());
@@ -219,7 +224,7 @@ class LabanLine {
     last.set(location);
     now.set(location);
     now.x += range;
-    spiral(last,now,45*indirectness,6*indirectness*indirectness);
+    spiral(last,now,45*indirectness,6*indirectness*indirectness,lifespan/100);
   }
 }
 
