@@ -6,7 +6,7 @@ float satval;
 void setupColors()
 {
   float input = random(0,1); 
-  colorMode(HSB, 360, 100, 100); 
+  colorMode(HSB, 360, 100, 100); //why would you set different maxes?
   colorlookup= int(input*colorarray.length) -1;
   satval = int(input*100);
   

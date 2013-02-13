@@ -261,7 +261,15 @@ class GrowLine {
   
   void curve2(int offset)
   {
-    stroke(c);
+    
+    //color alphaMask = color(255,255,255,100);
+    //(c*alphaMask);
+    color c = this.c;
+    colorMode(RGB);
+    color alphaMask = color(255,255,255,80);
+    c = c&alphaMask;
+    //(c*alphaMask);
+    //stroke(color(255,255,255,255));
     float d = PVector.dist(start,end);
     int np = 5;
     float tdelta = 1.0/((float)np);
