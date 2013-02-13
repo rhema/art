@@ -235,8 +235,13 @@ class GrowLine {
     this.end = end;
     c = color(255,255,255,255);
     c = getColor(.6);
+    float scale = 1000;
     for(int i=0;i<200;i++)
-      savedRandomPoints.add(PVector.random2D());
+      //savedRandomPoints.add(PVector.random2D());
+      {
+      savedRandomPoints.add(new PVector(noise(i*1000+1)*2.0-1.0,(noise(i*1000+1.0)*2.0-1.0)));
+      println(savedRandomPoints.get(i));
+      }
   }
 
   void run() {
@@ -271,7 +276,8 @@ class GrowLine {
     //(c*alphaMask);
     //stroke(color(255,255,255,255));
     float d = PVector.dist(start,end);
-    int np = 5;
+    int np = 3+(int)((1+savedRandomPoints.get(2).x)*10.0);
+    println("NP IS "+np);
     float tdelta = 1.0/((float)np);
     Vector<PVector> controlPoints = new Vector<PVector>();
     controlPoints.add(PVector.mult(start,1));
