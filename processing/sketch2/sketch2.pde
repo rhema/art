@@ -21,13 +21,18 @@ SyphonServer server;
 //Add 30 second timer count down...
 
 PImage img;
+Vector<PImage> trees = new Vector<PImage>();
+
 PImage sky;
 
 void setup() {
   int swidth = 640;//displayWidth
   int sheight = 480;//displayHeight
   size(swidth, sheight,P3D);
-  img = loadImage("images/tree_k.png");
+  for(int i=1;i<5;i++)
+  {
+    trees.add(loadImage("images/tree_k"+i+".png"));
+  }
   sky = loadImage("images/sky.png");
   canvas = createGraphics(swidth, sheight,P3D);
   canvas2 = createGraphics(swidth, sheight,P3D);
@@ -139,6 +144,7 @@ void draw() {
   {
     for(int i=0;i<15;i++)
     {
+      img = trees.get((i+layer*13)%trees.size());
       canvas.pushMatrix();
       canvas.translate((((float)layer)/5.0)*400*i-derFrame, 0, 100*layer);
       canvas.scale(1,3,1);
