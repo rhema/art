@@ -1,3 +1,5 @@
+import codeanticode.syphon.*;
+
 Boolean useBinary = true;//Use binary or raw format
 int incomingPort = 7777;
 
@@ -12,11 +14,26 @@ Vector<PVector> all_positions = new Vector<PVector>(21);
 Vector<PVector> all_positions_p = new Vector<PVector>(21);
 
 PGraphics canvas;
+PGraphics canvas2;
+SyphonServer server;
+
+
+//Add 30 second timer count down...
+
+PImage img;
+PImage sky;
 
 void setup() {
-  //size(640, 480);
-  size(displayWidth, displayHeight,P3D);
-  canvas = createGraphics(displayWidth, displayHeight,P3D);
+  int swidth = 640;//displayWidth
+  int sheight = 480;//displayHeight
+  size(swidth, sheight,P3D);
+  img = loadImage("images/tree_k.png");
+  sky = loadImage("images/sky.png");
+  canvas = createGraphics(swidth, sheight,P3D);
+  canvas2 = createGraphics(swidth, sheight,P3D);
+
+  server = new SyphonServer(this, "Processing Syphon");
+  
   int points_in_skel = 21;
   if(useBinary)
   {
@@ -32,21 +49,128 @@ void setup() {
 }
 
 float blah = 3;
+
+/*
 void draw()
 {
   background(0x334455);
   
   canvas.beginDraw();
   canvas.background(127);
-  canvas.ellipse(24,blah,24,24);
   canvas.lights();
-  canvas.translate(width/2, height/2);
+  canvas.translate(width/2, height/2,-1*frameCount);
+  canvas.rect(0,0,10,10);
+  canvas.rotateZ(.8);
   canvas.rotateX(frameCount * 0.01);
   canvas.rotateY(frameCount * 0.01);
-    
   canvas.endDraw();
   image(canvas, 0, 0);
 }
+*/
+
+/*
+void draw()  {
+  background(0x334455);
+  canvas.beginDraw();
+  if(mousePressed) {
+    float fov = PI/3.0; 
+    float cameraZ = (height/2.0) / tan(fov/2.0); 
+    canvas.perspective(fov, float(width)/float(height), cameraZ/2.0, cameraZ*2.0); 
+  } else {
+    canvas.ortho(0, width, 0, height); 
+  }
+  canvas.translate(width/2, height/2, 0);
+  canvas.rotateX(-PI/6); 
+  canvas.rotateY(PI/3); 
+  canvas.box(160); 
+  
+  canvas.endDraw();
+  image(canvas, 0, 0);
+}*/
+
+/*
+void draw() {
+  background(0);
+  camera(mouseY, height/2, (height/2) / tan(PI/6), mouseY, height/2, 0, 0, 1, 0);
+  translate(width/2, height/2, -100);
+  stroke(255);
+  noFill();
+  box(200);
+  
+  noStroke();
+  beginShape();
+  texture(img);
+  vertex(-100, -100, 0, 0,   0);
+  vertex( 100, -100, 0, 990, 0);
+  vertex( 100,  100, 0, 990, 742);
+  vertex(-100,  100, 0, 0,   742);
+  endShape();
+
+}*/
+
+
+float x=0;
+float y=0;
+float z=-300;
+
+void draw() {
+  
+  canvas.beginDraw();
+  canvas.background(0);
+  canvas.pushMatrix();
+  canvas.translate(-width/2, -height/2, -400);
+  canvas.scale(2,2,2);
+  canvas.image(sky,0,0);
+  canvas.popMatrix();
+  
+  //canvas.camera(mouseY, height/2, (height/2) / tan(PI/6), mouseY, height/2, 0, 0, 1, 0);
+  canvas.translate(width/2, height/2, -100);
+  
+  canvas.pushMatrix();
+  canvas.translate(x, y, z);
+  
+  canvas.stroke(255);
+  canvas.noFill();
+  canvas.box(200);
+  
+  int derFrame = 700 + frameCount%(1500);
+  //copy and cycle...
+  for(int layer=0;layer<5;layer++)
+  {
+    for(int i=0;i<15;i++)
+    {
+      canvas.pushMatrix();
+      canvas.translate((((float)layer)/5.0)*400*i-derFrame, 0, 100*layer);
+      canvas.scale(1,3,1);
+      canvas.noStroke();
+      canvas.beginShape();
+      canvas.noFill();
+      canvas.noStroke();
+      canvas.texture(img);
+      canvas.vertex(-100, -100, 0, 0,   0);
+      canvas.vertex( 100, -100, 0, 990, 0);
+      canvas.vertex( 100,  100, 0, 990, 742);
+      canvas.vertex(-100,  100, 0, 0,   742);
+      canvas.endShape();
+      canvas.popMatrix();
+    }
+  }
+  canvas.popMatrix();
+  canvas.endDraw();
+  float squish = ((float)(mouseY))/((float)(canvas.height+1));
+  //println(squish+ "   "+mouseY);
+  
+  float sub = (squish*.5*((float)canvas.height));
+  canvas2.beginDraw();
+  canvas2.background(0);
+  canvas2.image(canvas, 0, sub/2.0, canvas.width, canvas.height-sub);
+  canvas2.endDraw();
+  image(canvas2, 0, 0);
+  server.sendImage(canvas2);
+}
+
+
+
 PVector kinectToPV(PVector k)
 {
   PVector p = new PVector(k.x*200+400,-k.y*200+500);
