@@ -19,7 +19,7 @@ float currentSpeed;
     {
       boxes[i]=new object(img,w,h);
     }
-  currentSpeed=5;
+  currentSpeed=2;
     noStroke();
   }
   
@@ -27,11 +27,15 @@ float currentSpeed;
 
     background(0);
     camera(width/2, height/2+cameraY, (height/2) / tan(PI/6), width/2, height/2+cameraY, 0, 0, 1, 0);
+    
+  //  pushMatrix();
+   
      for(int i=0;i<boxNum;i++)
      {
        boxes[i].display();
      }
-    cameraY+=2;
+   //  popMatrix();
+    cameraY+=currentSpeed;
   //  beginShape();
   //      texture(img);
   //      vertex(-100, -100, 0, 0, 0);
@@ -104,7 +108,7 @@ float currentSpeed;
       if(y<(cameraY-10)||y>(cameraY+h+10))
       return;
      drawBox(x,y,z,thetax,thetay,thetaz,size);
-   thetaz=thetaz+rotationSpeed*rotateDirection;
+   //thetaz=thetaz+rotationSpeed*rotateDirection;
     }
     
   
