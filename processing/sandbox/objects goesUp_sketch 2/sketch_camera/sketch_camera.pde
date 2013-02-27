@@ -17,13 +17,14 @@ float currentSpeed;
     boxes=new object[boxNum];
     for(int i=0;i<boxNum;i++)
     {
-      boxes[i]=new object("clock.png",w,h);
+      boxes[i]=new object(img,w,h);
     }
   currentSpeed=5;
     noStroke();
   }
   
   void draw() {
+
     background(0);
     camera(width/2, height/2+cameraY, (height/2) / tan(PI/6), width/2, height/2+cameraY, 0, 0, 1, 0);
      for(int i=0;i<boxNum;i++)
@@ -49,10 +50,10 @@ float currentSpeed;
     float rotationSpeed;
     float life;
    
-    object(String imgName,int _w,int _h) {
+    object(PImage image,int _w,int _h) {
       w=_w;
       h=_h;
-    image=loadImage(imgName);
+    this.image=image;
   generate();
     
     }
@@ -87,7 +88,7 @@ float currentSpeed;
       rotateY(thetay);
       rotateZ(thetaz);
       //scale(size);
-  
+      noStroke();
        beginShape();
         texture(image);
         vertex(-boxSize, -boxSize, 0, 0, 0);
