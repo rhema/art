@@ -116,7 +116,7 @@ void draw() {
 
 float x=0;
 float y=0;
-float z=-300;
+float z=-400;
 
 void draw() {
   
