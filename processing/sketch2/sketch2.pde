@@ -25,6 +25,8 @@ Vector<PImage> trees = new Vector<PImage>();
 
 PImage sky;
 
+PImage grass;
+
 void setup() {
   int swidth = 640;//displayWidth
   int sheight = 480;//displayHeight
@@ -34,6 +36,7 @@ void setup() {
     trees.add(loadImage("images/tree_k"+i+".png"));
   }
   sky = loadImage("images/sky.png");
+  grass = loadImage("images/grass.png");
   canvas = createGraphics(swidth, sheight,P3D);
   canvas2 = createGraphics(swidth, sheight,P3D);
 
@@ -120,12 +123,27 @@ float z=-300;
 
 void draw() {
   
+  float squish = ((float)(mouseY))/((float)(canvas.height+1));
+  println(squish+ "   "+mouseY);
+  float scaleDiff = 2.0 - 2.0*squish;
+  
+  float sub = (squish*.5*((float)canvas.height));
+  
   canvas.beginDraw();
   canvas.background(0);
+  
   canvas.pushMatrix();
   canvas.translate(-width/2, -height/2, -400);
   canvas.scale(2,2,2);
   canvas.image(sky,0,0);
+  canvas.popMatrix();
+  
+  
+  canvas.pushMatrix();
+  canvas.rotateX(PI/180.0*90.0);
+  canvas.translate(-width/2, -height, -450);
+  canvas.scale(2,2,2);
+  canvas.image(grass,0,0);
   canvas.popMatrix();
   
   //canvas.camera(mouseY, height/2, (height/2) / tan(PI/6), mouseY, height/2, 0, 0, 1, 0);
@@ -134,20 +152,23 @@ void draw() {
   canvas.pushMatrix();
   canvas.translate(x, y, z);
   
-  canvas.stroke(255);
-  canvas.noFill();
-  canvas.box(200);
+//  canvas.stroke(255);
+//  canvas.noFill();
+//  canvas.box(200);
   
   int derFrame = 700 + frameCount%(1500);
   //copy and cycle...
+  float ydiff = -(1+scaleDiff)*210*.5 + 240;
+  canvas.translate(0,ydiff,0);
   for(int layer=0;layer<5;layer++)
   {
     for(int i=0;i<15;i++)
     {
       img = trees.get((i+layer*13)%trees.size());
       canvas.pushMatrix();
+      
       canvas.translate((((float)layer)/5.0)*400*i-derFrame, 0, 100*layer);
-      canvas.scale(1,3,1);
+      canvas.scale(1,scaleDiff+1,1);
       canvas.noStroke();
       canvas.beginShape();
       canvas.noFill();
@@ -163,16 +184,13 @@ void draw() {
   }
   canvas.popMatrix();
   canvas.endDraw();
-  float squish = ((float)(mouseY))/((float)(canvas.height+1));
-  //println(squish+ "   "+mouseY);
   
-  float sub = (squish*.5*((float)canvas.height));
-  canvas2.beginDraw();
-  canvas2.background(0);
-  canvas2.image(canvas, 0, sub/2.0, canvas.width, canvas.height-sub);
-  canvas2.endDraw();
-  image(canvas2, 0, 0);
-  server.sendImage(canvas2);
+//  canvas2.beginDraw();
+//  canvas2.background(0);
+//    canvas2.image(canvas, 0, sub/2.0, canvas.width, canvas.height-sub);
+//  canvas2.endDraw();
+  image(canvas, 0, 0);
+  server.sendImage(canvas);
 }
 
 
