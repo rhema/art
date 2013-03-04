@@ -6,7 +6,7 @@
   int boxSize;
   int imageNum;
   float []zVal;
-  
+  float previousSpeed;
 
   int eyeBlinkSpeed=100;
   
@@ -17,7 +17,7 @@ float currentSpeed;
   
   void prepareTextures()
   {
-    imageNum=5;
+    imageNum=3;
     imgs=new PImage[10];
     imgs[0]=loadImage("clock.png");
     imgs[1]=loadImage("bluedoor.png");
@@ -68,9 +68,49 @@ float currentSpeed;
     noStroke();
   }
   
+  void keyPressed() {
+     if (key == 's' || key == 'S') {
+       if(currentSpeed>0)
+       {
+         previousSpeed=currentSpeed;
+          currentSpeed=0;
+       }
+          else
+          currentSpeed=previousSpeed;
+    }
+    else if (key == 'q' || key == 'Q')
+         currentSpeed+=1;
+      else if (key == 'e' || key == 'E')
+      {
+         currentSpeed-=1;   
+       if(currentSpeed<1)
+            currentSpeed=1;  
+      }
+}
+  
   void draw() {
 
-    background(0);
+//    if (keyPressed) {
+//    if (key == 's' || key == 'S') {
+//       if(currentSpeed>0)
+//       {
+//         previousSpeed=currentSpeed;
+//          currentSpeed=0;
+//       }
+//          else
+//          currentSpeed=previousSpeed;
+//    }
+//    else if (key == 'q' || key == 'Q')
+//         currentSpeed+=0.2;
+//      else if (key == 'e' || key == 'E')
+//      {
+//         currentSpeed-=0.2;   
+//       if(currentSpeed<1)
+//            currentSpeed=1;  
+//      }
+//  }
+  
+   background(0);
      
     camera(width/2, height/2+cameraY, (height/2) / tan(PI/6), width/2, height/2+cameraY, 0, 0, 1, 0);
     
@@ -247,10 +287,10 @@ float currentSpeed;
       if(y<(cameraY-10)||y>(cameraY+h+10))
       return;
      drawBox(x,y,z,thetax,thetay,thetaz,size,pointer.width,pointer.height);
-     if(imageID==0)
-     {
-       drawPointer(x,y,z,thetax,thetay,thetaz,size,imgs[imageID].width,imgs[imageID].height);
-     }
+//     if(imageID==0)
+//     {
+//       drawPointer(x,y,z,thetax,thetay,thetaz,size,imgs[imageID].width,imgs[imageID].height);
+//     }
    thetaz=thetaz+rotationSpeed*rotateDirection;
     }
     
