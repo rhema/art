@@ -19,14 +19,14 @@ float currentSpeed;
   {
     imageNum=3;
     imgs=new PImage[10];
-    imgs[0]=loadImage("clock.png");
+    imgs[0]=loadImage("blankclock_1.png");
     imgs[1]=loadImage("bluedoor.png");
     imgs[2]=loadImage("hotpinkbiscuit.png");
     imgs[3]=loadImage("purpledoor.png");
     imgs[4]=loadImage("teacup.png");
     imgs[5]=loadImage("teapot.png");
     
-    pointer=loadImage("teapot.png");
+    pointer=loadImage("hands.png");
     
     eyes=new PImage[2];
     eyes[0]=loadImage("eyeOpen.png");
@@ -286,21 +286,38 @@ float currentSpeed;
            y+=h*10+random(h*0.2,h*0.5);
       if(y<(cameraY-10)||y>(cameraY+h+10))
       return;
-     drawBox(x,y,z,thetax,thetay,thetaz,size,pointer.width,pointer.height);
-//     if(imageID==0)
-//     {
-//       drawPointer(x,y,z,thetax,thetay,thetaz,size,imgs[imageID].width,imgs[imageID].height);
-//     }
+     drawBox(x,y,z,thetax,thetay,thetaz,size,imgs[imageID].width,imgs[imageID].height);
+     if(imageID==0)
+     {
+       drawPointer(x,y,z+0.5,thetax,thetay,thetaz,size,imgs[imageID].width,imgs[imageID].height);
+     }
    thetaz=thetaz+rotationSpeed*rotateDirection;
     }
     
     void drawPointer(float x,float y,float z,float thetax,float thetay,float thetaz,float size,int w,int h)
     {
+      
+//       float tmp=boxSize;
+//       float tmpX=tmp*660.0f/1024.0f;
+//       float tmpY=tmp*511.0f/1024.0f;
+//       
+//       tmpX=0;
+//       tmpY=0;
+       
          pushMatrix();
+         
+        
       translate(x, y, z);
+      
+     //  translate(tmpX,tmpY,0);
       rotateX(thetax);
       rotateY(thetay);
       rotateZ(thetaz+pointRotation);
+      
+   
+       
+     // translate(tmpX,tmpY,0);
+       
       //scale(size);
       noStroke();
        beginShape();
@@ -312,7 +329,10 @@ float currentSpeed;
         vertex(-boxSize, boxSize, 0, 0, h);
         endShape();
         popMatrix();
-        pointRotation+=PI/300;
+        if(rotateDirection!=0)
+          pointRotation+=rotateDirection*PI/300;
+          else
+          pointRotation+=PI/300;
     }
     
   
