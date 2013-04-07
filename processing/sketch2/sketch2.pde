@@ -125,7 +125,7 @@ void draw() {
 float x=0;
 float y=0;
 float z=-400;
-float total_time=10.0;
+float total_time=100.0;
 float mid_dur = 2;
  
 
