@@ -1,0 +1,1 @@
+g++ example.cpp -o example `pkg-config --cflags --libs opencv`
