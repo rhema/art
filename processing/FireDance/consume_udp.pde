@@ -4,6 +4,9 @@ import java.util.*;
 
 
 DatagramSocket socket = null;
+
+DatagramSocket socket2 = null;
+
 /*
 void setup() {
   size(640, 480);
@@ -20,6 +23,7 @@ void wiiDataThread()
   InetAddress address = null;
   try
   {
+    println("getting socket");
    socket = new DatagramSocket(wiiPort, InetAddress.getByName("0.0.0.0"));
     }
    catch (Exception se)
@@ -33,7 +37,7 @@ void wiiDataThread()
        continue;
     //print("Listening...");
     
-      byte[] buf = new byte[4*62*100];
+      byte[] buf = new byte[100];
       DatagramPacket packet = new DatagramPacket(buf, buf.length);
       try
       {
@@ -49,13 +53,80 @@ void wiiDataThread()
 //      print(numbers[0]);
       float f = Float.parseFloat(numbers[0]);
       //print(f);
-      float smooth = .6;
+      float smooth = .7;
       accel = accel*smooth+f*(1.0-smooth);
       gotWiiData();
       //print(numbers[0]+"  "+" x:"+numbers[2]+ " y:" + numbers[3] + " z:" + numbers[4]+ "\n");
-          
-  
+  }
+}
+
+
+
+void cameraSensorDataThread()
+{
+  InetAddress address = null;
+  try
+  {
+   socket2 = new DatagramSocket(cameraSensorPort, InetAddress.getByName("0.0.0.0"));
+    }
+   catch (Exception se)
+  {
+    print("fail 1");
+  }
+  while(true)
+  {
     
+    if(socket2 == null)
+       continue;
+    //print("Listening...");
     
+      byte[] buf = new byte[1000];
+      DatagramPacket packet = new DatagramPacket(buf, buf.length);
+      println("can I has data?");
+      try
+      {
+       socket2.receive(packet);
+      }
+      catch (Exception e)
+      {
+        print("fail 2");
+        e.printStackTrace();
+      } 
+      println("Did I has data?");
+      String received = new String(packet.getData(), 0, packet.getLength());
+      String[] numbers = received.split(" ");
+      //println("First num!!"+numbers[0]);
+      int ws = Integer.parseInt(numbers[0]);
+      if(windowSize != ws)//Init or reset crowdSquares
+      {
+        windowSize = ws;
+        crowdSquares = new Vector<Float>();
+        for(int i=0; i<windowSize*windowSize; i++)
+        {
+          crowdSquares.add(new Float(0));
+        }
+      }
+      
+      //set all of the values...
+      int index = 0;
+      for(String num:numbers)
+      {
+        if(index == 0)
+        {
+          index+=1;
+          continue;
+        }
+        crowdSquares.set(index-1, Float.parseFloat(num));
+        index+=1;
+        if(index == windowSize*windowSize)
+          break;
+      }
+     
+      gotCameraSensorData();     
+      
+      //float f = Float.parseFloat(numbers[0]);
+      //float smooth = .6;
+      //accel = accel*smooth+f*(1.0-smooth);
+      //gotWiiData();
   }
 }

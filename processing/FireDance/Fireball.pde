@@ -70,7 +70,8 @@ class Fireball {
   
   void applyBehaviors(ArrayList<Fireball> fireballs) {
      PVector separateForce = separate(fireballs);
-     PVector seekForce = seek(new PVector(mouseX,mouseY));
+     //PVector seekForce = seek(new PVector(mouseX,mouseY));
+     PVector seekForce = seek(new PVector(seekX,seekY));
      separateForce.mult(2);
      seekForce.mult(1);
      applyForce(separateForce);
