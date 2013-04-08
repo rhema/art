@@ -1,6 +1,6 @@
 #include <cv.h>
 #include <highgui.h>
-const int windowSize=10;
+int windowSize=10;
 //Mat allOnes=Mat::ones(windowSize+1,windowSize+1,CV_32FC1);
 using namespace cv;
 Mat belongIndex;
@@ -18,8 +18,10 @@ Mat image;
 bool hasBelongIndex;
 bool isInside(Point &p1,Point &p2,Point &p3,Point &p4,Point &p);
 
-int pixelNum[windowSize*windowSize];
-float prob[windowSize*windowSize];
+int* pixelNum;//[windowSize*windowSize];
+float* prob;//[windowSize*windowSize];
+char* to_ip;
+int to_port;
 
 
 #include "PracticalSocket.h"  // For UDPSocket and SocketException
@@ -364,13 +366,31 @@ void send_data(float* prob)
     char nameee[50];
 	sprintf(nameee, "%d ", windowSize);
     s = nameee+s;
-	printf(s.c_str());//s.c_str());
+	//printf(s.c_str());//s.c_str());
 	
-	sock.sendTo(s.c_str(), strlen(s.c_str()), "127.0.0.1", 9999);
+	sock.sendTo(s.c_str(), strlen(s.c_str()), to_ip, to_port);
 }
 
-int main()
+int main(int argc, char * argv[])
 {
+	cout << "there argc " << argc << "arguments...\n\n\n";
+	if(argc < 4)
+	{
+		cout << "\nProper use is:  ./program WINDOWSIZE TO_IP TO_PORT\n";
+		return 0;
+	}
+	
+	windowSize = atoi(argv[1]);
+	to_ip = argv[2];
+    to_port = atoi(argv[3]);
+    prob = new float[windowSize*windowSize];
+    pixelNum = new int[windowSize*windowSize];
+	
+	cout << "Nope!  lol....\n";
+	cout << windowSize << "\n";
+	cout << to_ip << "\n";
+	cout << to_port << "\n";
+	//return 0;
 	//����IplImageָ��  
 	IplImage* pFrame = NULL;   
 	IplImage* pFrImg = NULL;  
