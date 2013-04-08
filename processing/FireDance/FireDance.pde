@@ -2,17 +2,46 @@
 // Daniel Shiffman
 // http://natureofcode.com
 
+
+
 // A list of fireballs
 ArrayList<Fireball> fireballs;
 //PImage img;
 
+int wiiPort = 9010;
+int cameraSensorPort = 9020;
+
+//These are the variables that the communication code writes to.  Don't do anything but read from them
+//or bad things (sychronization errors) will happen.
+float accel = 0;
+
 void setup() {
   
-  size(1920,1080,P3D);
+  //size(1920,1080,P3D);
+  size(displayWidth, displayHeight,P3D);
   //img = loadImage("fire.jpg");
   //texture(img);
   // We are now making random fireballs and storing them in an ArrayList
   fireballs = new ArrayList<Fireball>();
+  thread("wiiDataThread");
+}
+
+float max = 0;
+void gotWiiData()
+{
+  /*
+  if(accel > max)
+  {
+    max = accel;
+    println(max);
+  }*/
+  
+  if(accel > .60)
+  {
+    //pow
+     kickBalls();
+  }
+  
 }
 
 void draw() {
@@ -36,6 +65,15 @@ void draw() {
 //void mouseDragged() {
 //  fireballs.add(new Fireball(mouseX,mouseY));
 //}
+
+void kickBalls()
+{
+  for (Fireball f: fireballs) 
+  {
+        f.kick = new PVector(random(-1*f.kickspeed,f.kickspeed), random(-1*f.kickspeed,f.kickspeed));
+        f.maxspeed = f.kickspeed;
+  }
+}
 
 void keyPressed() {
   int count = 0;
@@ -81,14 +119,16 @@ void keyPressed() {
   // bb
   for (Fireball f: fireballs) {
     //f.maxspeed = count * 100; 
-    if (kick == 1) {
-      f.kick = new PVector(random(-1*f.kickspeed,f.kickspeed), random(-1*f.kickspeed,f.kickspeed));
-      f.maxspeed = f.kickspeed;
-    }
+    
     if (fadeout == 1) {
       f.fadeout = 1;
     }
-  }  
+  } 
+  
+  if (kick == 1) {
+    kickBalls();
+  }
+  
 }
 
    
