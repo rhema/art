@@ -37,7 +37,7 @@ class Fireball {
     fadeout      = 0;
     c            = cc; //bb
     alpha        = 255; //bb
-    img = loadImage("fire.jpeg");
+    img = loadImage("fireBall.png");
     
   }
   
@@ -147,9 +147,10 @@ class Fireball {
     fill(c);
     stroke(0);
     pushMatrix();
-    //image(img, location.x, location.y);
-    translate(location.x, location.y);
-    ellipse(0, 0, r, r);
+    image(img, location.x, location.y);
+    //blend(img, 0, 0, 40, 40, 67, 0, 40, 40, ADD);
+    //translate(location.x, location.y);
+    //ellipse(0, 0, r, r);
     popMatrix();
   }
 
