@@ -3,17 +3,20 @@
 // http://natureofcode.com
 
 
-
+//import java.lang.Math;
 // A list of fireballs
 ArrayList<Fireball> fireballs;
 int windowSize = 0;
 Vector<Float> crowdSquares;
+Vector<Float> crowdSquares_added;
+Vector<Float> weight;
 //PImage img;
 float seekX = 200;
 float seekY = 200;
 
 int wiiPort = 9010;
 int cameraSensorPort = 9020;
+bool hasWeight;
 
 //These are the variables that the communication code writes to.  Don't do anything but read from them
 //or bad things (sychronization errors) will happen.
@@ -29,6 +32,7 @@ void setup() {
   fireballs = new ArrayList<Fireball>();
   thread("wiiDataThread");
   thread("cameraSensorDataThread");
+  hasWeight=false;
 }
 
 float max = 0;
@@ -78,7 +82,12 @@ void gotCameraSensorData()
   seekX = (.5+x)*scale_x;
   seekY = (.5+y)*scale_y;
   
-
+  if(!hasWeight)
+  {
+     setupWeight();
+     hasWeight=true;
+  }
+ 
   //displayWidth, displayHeight
 }
 
@@ -91,7 +100,7 @@ void draw() {
   //image(img, width/2, height/2);
  
  
- 
+ calculateWeight();
   if (windowSize > 0)
   {
     println("lets draw...");
