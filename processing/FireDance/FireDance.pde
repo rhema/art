@@ -8,7 +8,7 @@
 ArrayList<Fireball> fireballs;
 int windowSize = 0;
 Vector<Float> crowdSquares;
-Vector<Float> crowdSquares_added;
+Vector<Float> crowdSquares_added;//use crowdSquares_added instead of corwdSquares
 Vector<Float> weight;
 //PImage img;
 float seekX = 200;
@@ -16,7 +16,7 @@ float seekY = 200;
 
 int wiiPort = 9010;
 int cameraSensorPort = 9020;
-bool hasWeight;
+boolean hasWeight;
 
 //These are the variables that the communication code writes to.  Don't do anything but read from them
 //or bad things (sychronization errors) will happen.
@@ -33,6 +33,18 @@ void setup() {
   thread("wiiDataThread");
   thread("cameraSensorDataThread");
   hasWeight=false;
+  
+//  windowSize=3;
+//    crowdSquares = new Vector<Float>();
+//        for(int i=0; i<windowSize*windowSize; i++)
+//        {
+//          crowdSquares.add(new Float(0));
+//        }
+//        crowdSquares.set(0,1.0);
+//        
+//  setupWeight();
+//  calculateWeight();
+//  windowSize=0;
 }
 
 float max = 0;

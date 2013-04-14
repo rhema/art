@@ -31,17 +31,28 @@ void calculateWeight()
     curI=i/windowSize;
     curJ=i%windowSize;
     Float curSum=0.0;
+//  Float curWeight;
+//  curWeight=crowdSquares.get(i);
+  
+   // if(curWeight>0)
+    {
      for(int j=0;j<windowSize;j++)
      {
        for(int k=0;k<windowSize;k++)
        {
-         //curSum=curSum+weight.get((windowSize-1+j-curI)*windowSize*2+windowSize-1+k-curJ);
-        curSum=curSum+weight.get(2);
+        curSum=curSum+weight.get((windowSize+j-curI)*windowSize*2+windowSize+k-curJ)*crowdSquares.get(j*windowSize+k);
+       // crowdSquares_added.set(j*windowSize+k,crowdSquares_added.get(j*windowSize+k))
+         
+      
+        //curSum=curSum+weight.get(2);
         // Float curWeight=;//[windowSize+j-curI][windowSize+k-curJ];
         // crowdSquares_added.set(i,crowdSquares.get(i)*weight.get((windowSize+j-curI)*windowSize*2+windowSize+k-curJ));
          
        }
      }
+       // String message = "The value of w is: " + curSum;
+       // println(message);
+    }
       crowdSquares_added.set(i,curSum);
   }
 }
