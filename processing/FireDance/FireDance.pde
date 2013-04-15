@@ -17,7 +17,7 @@ float seekY = 200;
 int wiiPort = 9010;
 int cameraSensorPort = 9020;
 boolean hasWeight;
-int numFramesTilGenerate = 100;
+int numFramesTilGenerate = 20;
 
 //These are the variables that the communication code writes to.  Don't do anything but read from them
 //or bad things (sychronization errors) will happen.
@@ -32,21 +32,22 @@ Movie movie;
 
 PImage img;
 PImage imgMask;
-int w = 640;
-int h = 360;
+int w = 400;
+int h = 600;
 PGraphics maskme;
 PGraphics movieImage;
 PGraphics syphonImage;
 PShader blur;
 
 SyphonServer server;
-
+int windowWidth = 0;
+int windowHeight = 0;
 
 void setup() {
   
   //size(1920,1080,P3D);
-  int windowWidth = displayWidth;
-  int windowHeight = displayHeight;
+  windowWidth = displayWidth;
+  windowHeight = displayHeight;
   windowWidth = w;
   windowHeight = h;
   size(windowWidth, windowHeight, P3D);
@@ -127,8 +128,8 @@ void gotCameraSensorData()
     index +=1;
   } 
   println("X:"+x+" "+"Y:"+y);
-  float scale_x = float(displayWidth)/float(windowSize);
-  float scale_y = float(displayHeight)/float(windowSize);
+  float scale_x = float(windowWidth)/float(windowSize);
+  float scale_y = float(windowHeight)/float(windowSize);
   //winner_x = (.5+x)*scale_x;
   //winner_y = (.5+y)*scale_y;
   seekX = (.5+x)*scale_x;
@@ -149,8 +150,8 @@ void visualizeWeights()
   if (windowSize > 0)
   {
     println("lets draw...");
-    float scale_x = float(displayWidth)/float(windowSize);
-    float scale_y = float(displayHeight)/float(windowSize);
+    float scale_x = float(windowWidth)/float(windowSize);
+    float scale_y = float(windowHeight)/float(windowSize);
     int index = 0;
     for (Float val:crowdSquares)
     {

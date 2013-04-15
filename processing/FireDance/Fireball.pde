@@ -83,8 +83,8 @@ class Fireball {
   
   PVector locForIJ(float x,float y)
   {
-    float scale_x = float(displayWidth)/float(windowSize);
-    float scale_y = float(displayHeight)/float(windowSize);
+    float scale_x = float(windowWidth)/float(windowSize);
+    float scale_y = float(windowHeight)/float(windowSize);
     float s_x = (.5+x)*scale_x;
     float s_y = (.5+y)*scale_y;
     return new PVector(s_x,s_y);  
@@ -233,13 +233,14 @@ class Fireball {
   }
 
   void display(PGraphics graphics) {
-    graphics.noStroke();
-    graphics.fill(c);
-    graphics.stroke(0);
+    //graphics.noStroke();
+    //graphics.fill(0);
+    
     graphics.pushMatrix();
     //  image(img, location.x, location.y);
+    graphics.stroke(255);
     graphics.fill(255);
-    graphics.ellipse(location.x,location.y,life,life);
+    graphics.ellipse(location.x,location.y,life*1.5,life*1.5);
     
     //blend(img, 0, 0, 40, 40, 67, 0, 40, 40, ADD);
     //translate(location.x, location.y);
