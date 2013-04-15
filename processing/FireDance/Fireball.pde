@@ -2,6 +2,7 @@
 // Daniel Shiffman
 // http://natureofcode.com
 
+
 class Fireball {
 
   // All the usual stuff
@@ -231,18 +232,19 @@ class Fireball {
     adjustLife();
   }
 
-  void display() {
-    noStroke();
-    fill(c);
-    stroke(0);
-    pushMatrix();
+  void display(PGraphics graphics) {
+    graphics.noStroke();
+    graphics.fill(c);
+    graphics.stroke(0);
+    graphics.pushMatrix();
     //  image(img, location.x, location.y);
-    ellipse(location.x,location.y,life,life);
+    graphics.fill(255);
+    graphics.ellipse(location.x,location.y,life,life);
     
     //blend(img, 0, 0, 40, 40, 67, 0, 40, 40, ADD);
     //translate(location.x, location.y);
     //ellipse(0, 0, r, r);
-    popMatrix();
+    graphics.popMatrix();
   }
 
 }

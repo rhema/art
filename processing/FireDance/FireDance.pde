@@ -23,12 +23,32 @@ int numFramesTilGenerate = 100;
 //or bad things (sychronization errors) will happen.
 float accel = 0;
 
+boolean show_crowd_visualization = false;
+
+
+import codeanticode.syphon.*;
+import processing.video.*;
+Movie movie;
+
+PImage img;
+PImage imgMask;
+int w = 640;
+int h = 360;
+PGraphics maskme;
+PGraphics movieImage;
+PGraphics syphonImage;
+PShader blur;
+
+SyphonServer server;
+
 
 void setup() {
   
   //size(1920,1080,P3D);
   int windowWidth = displayWidth;
   int windowHeight = displayHeight;
+  windowWidth = w;
+  windowHeight = h;
   size(windowWidth, windowHeight, P3D);
   //img = loadImage("fire.jpg");
   //texture(img);
@@ -37,6 +57,17 @@ void setup() {
   thread("wiiDataThread");
   thread("cameraSensorDataThread");
   hasWeight=false;
+  
+  
+  
+   maskme = createGraphics(w, h, P3D);
+   movieImage = createGraphics(w, h, P3D);
+   syphonImage = createGraphics(w, h, P3D);
+ 
+    server = new SyphonServer(this, "Processing Syphon");
+    
+   movie = new Movie(this, "bubbles.mov");
+   movie.play();
   
 //  windowSize=3;
 //    crowdSquares = new Vector<Float>();
@@ -50,6 +81,11 @@ void setup() {
 //  calculateWeight();
 //  windowSize=0;
 }
+
+void movieEvent(Movie m) {
+  m.read();
+}
+
 
 float max = 0;
 void gotWiiData()
@@ -135,21 +171,48 @@ void visualizeWeights()
 }
 
 
+
+
+
 void draw() {
 
-  background(255);
+  background(0);
   //image(img, width/2, height/2);
   calculateWeight();
+  if(show_crowd_visualization)
+  {
+    visualizeWeights();
+  }
   
-  visualizeWeights();
+  
+  maskme.beginDraw();
+  maskme.fill(0,0,0,40);
+  maskme.rect(0,0,w,h);
   
   for (Fireball f: fireballs) {
     // Path following and separation are worked on in this function
     f.applyBehaviors(fireballs);
     // Call the generic run method (update, borders, display, etc.)update();
     f.update();
-    f.display();
+    f.display(maskme);
   }
+  maskme.endDraw();
+  
+  movieImage.beginDraw();
+  movieImage.image(movie, 0,0,w,h);
+  movieImage.endDraw();
+  PImage reallyMovieImage = movieImage.get();
+  reallyMovieImage.mask(maskme);
+  
+    syphonImage.beginDraw();
+  syphonImage.background(0);
+  syphonImage.image(reallyMovieImage, 0,0,w,h);
+ // syphonImage.image(movieImage, 0,0,w,h);
+  syphonImage.endDraw();
+  
+   image(syphonImage,0,0);
+ server.sendImage(syphonImage);
+  
   
   ArrayList<Fireball> fireballsTemp =  new ArrayList<Fireball>();//remove dead fireballs
   for (Fireball f: fireballs) {
@@ -190,6 +253,8 @@ void keyPressed() {
   int fadeout = 0;
 
   //This allows the user to have three balls on 1, 10 balls on 2, and 20 balls on 3
+  if(key == 'v')
+    show_crowd_visualization = !show_crowd_visualization;
   if (key == '0') {
     count = 0;
   } 
