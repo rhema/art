@@ -9,6 +9,9 @@ class Fireball {
   PVector velocity;
   PVector acceleration;
   float   r;
+  float   life;  
+  float   seek_x;
+  float   seek_y;
   float   maxforce;       // Maximum steering force
   float   maxspeed;       // Maximum speed
   float   maxspeeddecay;  // bb //speed at witch maxspeed goes back to normal speed
@@ -30,6 +33,7 @@ class Fireball {
     maxspeeddecay= 0.2;               //bb
     kickspeed    = 10;                //bb
     maxforce     = 0.2;
+    life = 20;
     acceleration = new PVector(0, 0);
     velocity     = new PVector(0, 0);
     decay        = new PVector(0, 0);  //bb
@@ -68,10 +72,59 @@ class Fireball {
     }
   }
   
+  
+  float distFactor(PVector loc)
+  {
+    float max = 2000;//merx location
+    float ret = max/(100+ dist(location.x, location.y, loc.x,loc.y));
+    return ret;
+  }
+  
+  PVector locForIJ(float x,float y)
+  {
+    float scale_x = float(displayWidth)/float(windowSize);
+    float scale_y = float(displayHeight)/float(windowSize);
+    float s_x = (.5+x)*scale_x;
+    float s_y = (.5+y)*scale_y;
+    return new PVector(s_x,s_y);  
+  }
+  
+  void setSeekLocation()
+  {
+    if(windowSize == 0)
+    {
+      return;
+    }
+      
+    int x = 0;
+    int y = 0;
+    float mm = 0;
+    int index = 0;
+    for (Float val:crowdSquares)
+    {
+      int tx = -1 + windowSize - index%windowSize;
+      int ty = index/windowSize;
+      val = val * distFactor(locForIJ(tx,ty));
+      if (val > mm)
+      {
+        x = -1 + windowSize - index%windowSize;
+        y = index/windowSize;
+        mm = val;
+      }
+      index +=1;
+    }
+    
+    PVector seekpos = locForIJ(x,y);
+    this.seek_x = seekpos.x;
+    this.seek_y = seekpos.y;
+  }
+  
   void applyBehaviors(ArrayList<Fireball> fireballs) {
      PVector separateForce = separate(fireballs);
      //PVector seekForce = seek(new PVector(mouseX,mouseY));
-     PVector seekForce = seek(new PVector(seekX,seekY));
+     setSeekLocation();
+     PVector seekForce = seek(new PVector(this.seek_x,this.seek_y));
+     
      separateForce.mult(2);
      seekForce.mult(1);
      applyForce(separateForce);
@@ -130,6 +183,41 @@ class Fireball {
   }
 
 
+  void adjustLife()
+  {
+    
+    
+    if(windowSize == 0)
+    {
+      return;
+    }
+      
+    int x = 0;
+    int y = 0;
+    float mm = 0;
+    int index = 0;
+    for (Float val:crowdSquares)
+    {
+      int tx = -1 + windowSize - index%windowSize;
+      int ty = index/windowSize;
+      val = val * distFactor(locForIJ(tx,ty));
+      if (val > mm)
+      {
+        x = -1 + windowSize - index%windowSize;
+        y = index/windowSize;
+        mm = val;
+      }
+      index +=1;
+    }
+    life += mm*.2;
+    
+    life *= .95;
+    life -= .05;
+    if(life < 5)
+      life = -1;
+    
+  }
+
   // Method to update location
   void update() {
     // Update velocity
@@ -140,6 +228,7 @@ class Fireball {
     // Reset accelertion to 0 each cycle
     acceleration.mult(0);
     kick.mult(0);  // bb
+    adjustLife();
   }
 
   void display() {
@@ -147,7 +236,9 @@ class Fireball {
     fill(c);
     stroke(0);
     pushMatrix();
-    image(img, location.x, location.y);
+    //  image(img, location.x, location.y);
+    ellipse(location.x,location.y,life,life);
+    
     //blend(img, 0, 0, 40, 40, 67, 0, 40, 40, ADD);
     //translate(location.x, location.y);
     //ellipse(0, 0, r, r);

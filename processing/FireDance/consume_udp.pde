@@ -116,7 +116,7 @@ void cameraSensorDataThread()
           index+=1;
           continue;
         }
-        crowdSquares.set(index-1, Float.parseFloat(num));
+        crowdSquares.set(index-1, crowdSquares.get(index-1)*.5 +  Float.parseFloat(num)*.5);
         index+=1;
         if(index == windowSize*windowSize)
           break;

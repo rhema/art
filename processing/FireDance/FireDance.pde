@@ -17,15 +17,19 @@ float seekY = 200;
 int wiiPort = 9010;
 int cameraSensorPort = 9020;
 boolean hasWeight;
+int numFramesTilGenerate = 100;
 
 //These are the variables that the communication code writes to.  Don't do anything but read from them
 //or bad things (sychronization errors) will happen.
 float accel = 0;
 
-void setup() {
 
+void setup() {
+  
   //size(1920,1080,P3D);
-  size(displayWidth, displayHeight, P3D);
+  int windowWidth = displayWidth;
+  int windowHeight = displayHeight;
+  size(windowWidth, windowHeight, P3D);
   //img = loadImage("fire.jpg");
   //texture(img);
   // We are now making random fireballs and storing them in an ArrayList
@@ -104,15 +108,8 @@ void gotCameraSensorData()
 }
 
 
-
-
-void draw() {
-
-  background(255);
-  //image(img, width/2, height/2);
- 
- 
- calculateWeight();
+void visualizeWeights()
+{
   if (windowSize > 0)
   {
     println("lets draw...");
@@ -124,16 +121,27 @@ void draw() {
 
       int x = -1+windowSize - index%windowSize;
       int y = index/windowSize;
-
-      fill(color(0, val*255, 0));
+      
+      color c = color(0, val*255, 0);
+      stroke(c);
+      fill(c);
       float fx = scale_x*(x+.5);
       float fy = scale_y*(y+.5);
-      ellipse(fx, fy, 100, 100);
+      float serze = 10 + 10*crowdSquares_added.get(index); 
+      ellipse(fx, fy, serze, serze);
       index +=1;
     }
   } 
- 
- 
+}
+
+
+void draw() {
+
+  background(255);
+  //image(img, width/2, height/2);
+  calculateWeight();
+  
+  visualizeWeights();
   
   for (Fireball f: fireballs) {
     // Path following and separation are worked on in this function
@@ -142,10 +150,23 @@ void draw() {
     f.update();
     f.display();
   }
+  
+  ArrayList<Fireball> fireballsTemp =  new ArrayList<Fireball>();//remove dead fireballs
+  for (Fireball f: fireballs) {
+    if(f.life > 0)
+    {
+      fireballsTemp.add(f);
+    }
+  }
+  fireballs = fireballsTemp;
 
   // Instructions
   fill(0);
   text("Drag the mouse to generate new fireballs.", 10, height-16);
+  
+  if(frameCount % numFramesTilGenerate == 0)
+     fireballs.add(new Fireball(random(width), random (height), color(0,0,0)));
+  
 }
 
 
@@ -191,6 +212,8 @@ void keyPressed() {
     fadeout = 1;
   }
 
+/*
+
   if (count != 0 ) { //bb
     //This allows us to go up and down in crowd sizes (hopefully according to movement)
     if (count > fireballs.size()) {
@@ -206,6 +229,7 @@ void keyPressed() {
       }
     }
   }
+  */
 
   print("Count: "); 
   print(count); 
