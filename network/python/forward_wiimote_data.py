@@ -13,6 +13,7 @@ sock = socket.socket(socket.AF_INET, # Internet
 sock.bind((UDP_IP, UDP_PORT))
 
 UDP_IP_TO = "127.0.0.1"
+UDP_IP_TO = "10.201.105.188"
 UDP_PORT_TO = 9010
 socksend = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 
