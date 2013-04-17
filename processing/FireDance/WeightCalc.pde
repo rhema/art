@@ -1,4 +1,16 @@
 //import Math;
+
+
+
+PVector locForIJ(float x,float y)
+  {
+    float scale_x = float(windowWidth)/float(windowSize);
+    float scale_y = float(windowHeight)/float(windowSize);
+    float s_x = (.5+x)*scale_x;
+    float s_y = (.5+y)*scale_y;
+    return new PVector(s_x,s_y);  
+  }
+
 void setupWeight()
 {
   weight=new Vector<Float>();

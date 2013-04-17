@@ -82,7 +82,7 @@ void cameraSensorDataThread()
     
       byte[] buf = new byte[1000];
       DatagramPacket packet = new DatagramPacket(buf, buf.length);
-      println("can I has data?");
+      //println("can I has data?");
       try
       {
        socket2.receive(packet);
@@ -92,7 +92,7 @@ void cameraSensorDataThread()
         print("fail 2");
         e.printStackTrace();
       } 
-      println("Did I has data?");
+      //println("Did I has data?");
       String received = new String(packet.getData(), 0, packet.getLength());
       String[] numbers = received.split(" ");
       //println("First num!!"+numbers[0]);

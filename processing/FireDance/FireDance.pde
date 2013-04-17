@@ -6,6 +6,8 @@ int MOVIE_MASK = 1;
 int JUST_AN_IMAGE = 2;
 int draw_mode = JUST_AN_IMAGE;
 
+float generation_threshold = 3;
+
 boolean just_mask=false;
 
 float jitter_dist = 4;
@@ -41,8 +43,8 @@ PImage img;
 PImage imgMask;
 PImage background_image;
 String backgound_image_file = "firetest1.png";
-int w = 400;
-int h = 600;
+int w = 640;
+int h = 480;
 PGraphics maskme;
 PGraphics revealedImage;
 PGraphics syphonImage;
@@ -59,6 +61,7 @@ void setup() {
   windowHeight = displayHeight;
   windowWidth = w;
   windowHeight = h;
+  
   size(windowWidth, windowHeight, P3D);
   
   background_image = loadImage(backgound_image_file);
@@ -124,7 +127,7 @@ float winner_y = 100;
 
 void gotCameraSensorData()
 {
-  println("I HAS DATA");
+  //println("I HAS DATA");
   //Now a function goes here that lists left and right position... maybe find a winner?
   int x = 0;
   int y = 0;
@@ -140,7 +143,7 @@ void gotCameraSensorData()
     }
     index +=1;
   } 
-  println("X:"+x+" "+"Y:"+y);
+  //println("X:"+x+" "+"Y:"+y);
   float scale_x = float(windowWidth)/float(windowSize);
   float scale_y = float(windowHeight)/float(windowSize);
   //winner_x = (.5+x)*scale_x;
@@ -184,7 +187,47 @@ void visualizeWeights()
   } 
 }
 
+float getBiggestSumActivation()
+{
+  float ret = 0;
+  for(Float f: crowdSquares_added)
+     if(f>ret)
+       ret = f;
+  return ret;
+}
 
+PVector getLocationIndexForI(int target)
+{
+  //so ugly...
+  int count = 0;
+  for(int i=0; i<windowSize; i+=1)
+    for(int j=0; j<windowSize; j+=1)
+       {
+         if(target == count)
+            return locForIJ(windowSize-j,i);
+         count +=1;
+       }
+   return locForIJ(0,0);
+}
+
+PVector getLocatoinOfBiggestSumActivation()
+{
+  
+  float ret = 0;
+  int mi = 0;
+  int i = 0;
+  for(Float f: crowdSquares_added)
+  {
+     if(f>ret)
+     {
+       ret = f;
+       mi = i;
+     }
+     i+=1;
+  }
+  
+  return getLocationIndexForI(mi);
+}
 
 //PImage reallyrevealedImage = null;
 
@@ -272,8 +315,16 @@ else
   fill(0);
   //text("Drag the mouse to generate new fireballs.", 10, height-16);
   
-  if(frameCount % numFramesTilGenerate == 0)
-     fireballs.add(new Fireball(random(width), random (height), color(0,0,0)));
+  
+  if(frameCount % 1 == 0)
+  {
+     float active = getBiggestSumActivation();
+     if(active > generation_threshold)
+     {
+       PVector loc = getLocatoinOfBiggestSumActivation();
+       fireballs.add(new Fireball(loc.x, loc.y, color(0,0,0)));
+     }
+  }
   
 }
 

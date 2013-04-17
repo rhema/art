@@ -81,14 +81,7 @@ class Fireball {
     return ret;
   }
   
-  PVector locForIJ(float x,float y)
-  {
-    float scale_x = float(windowWidth)/float(windowSize);
-    float scale_y = float(windowHeight)/float(windowSize);
-    float s_x = (.5+x)*scale_x;
-    float s_y = (.5+y)*scale_y;
-    return new PVector(s_x,s_y);  
-  }
+  
   
   void setSeekLocation()
   {
@@ -183,8 +176,47 @@ class Fireball {
     return sum;
   }
 
+void adjustLife()
+  {
+    
+    
+    if(windowSize == 0)
+    {
+      return;
+    }
+    
+    
+    int x = 0;
+    int y = 0;
+    float mm = 0;
+    int index = 0;
+    for (Float val:crowdSquares)
+    {
+      int tx = -1 + windowSize - index%windowSize;
+      int ty = index/windowSize;
+      val = val * distFactor(locForIJ(tx,ty));
+      if (val > mm)
+      {
+        x = -1 + windowSize - index%windowSize;
+        y = index/windowSize;
+        mm = val;
+      }
+      index +=1;
+    }
+    life += mm*.2;
+    
+    /*
+    life *= .95;
+    life -= .05;
+    if(life < 5)
+      life = -1;
+    */
+    
+    
+    this.life -= 1.5;
+  }
 
-  void adjustLife()
+  void adjustLifeOld()
   {
     
     
