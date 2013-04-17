@@ -2,6 +2,13 @@
 // Daniel Shiffman
 // http://natureofcode.com
 
+int MOVIE_MASK = 1;
+int JUST_AN_IMAGE = 2;
+int draw_mode = JUST_AN_IMAGE;
+
+boolean just_mask=false;
+
+float jitter_dist = 4;
 
 //import java.lang.Math;
 // A list of fireballs
@@ -32,10 +39,12 @@ Movie movie;
 
 PImage img;
 PImage imgMask;
+PImage background_image;
+String backgound_image_file = "firetest1.png";
 int w = 400;
 int h = 600;
 PGraphics maskme;
-PGraphics movieImage;
+PGraphics revealedImage;
 PGraphics syphonImage;
 PShader blur;
 
@@ -51,6 +60,8 @@ void setup() {
   windowWidth = w;
   windowHeight = h;
   size(windowWidth, windowHeight, P3D);
+  
+  background_image = loadImage(backgound_image_file);
   //img = loadImage("fire.jpg");
   //texture(img);
   // We are now making random fireballs and storing them in an ArrayList
@@ -62,13 +73,15 @@ void setup() {
   
   
    maskme = createGraphics(w, h, P3D);
-   movieImage = createGraphics(w, h, P3D);
+   revealedImage = createGraphics(w, h, P3D);
    syphonImage = createGraphics(w, h, P3D);
  
     server = new SyphonServer(this, "Processing Syphon");
-    
-   movie = new Movie(this, "bubbles.mov");
-   movie.play();
+   if(draw_mode == MOVIE_MASK)
+   {
+     movie = new Movie(this, "bubbles.mov");
+     movie.play();
+   }
   
 //  windowSize=3;
 //    crowdSquares = new Vector<Float>();
@@ -173,7 +186,7 @@ void visualizeWeights()
 
 
 
-
+//PImage reallyrevealedImage = null;
 
 void draw() {
 
@@ -187,9 +200,11 @@ void draw() {
   
   
   maskme.beginDraw();
-  maskme.fill(0,0,0,40);
+  maskme.pushMatrix();
+  maskme.scale(1,-1);
+  maskme.translate(0,-h);
+  maskme.fill(0,0,0,255);
   maskme.rect(0,0,w,h);
-  
   for (Fireball f: fireballs) {
     // Path following and separation are worked on in this function
     f.applyBehaviors(fireballs);
@@ -197,18 +212,47 @@ void draw() {
     f.update();
     f.display(maskme);
   }
+  maskme.popMatrix();
   maskme.endDraw();
   
-  movieImage.beginDraw();
-  movieImage.image(movie, 0,0,w,h);
-  movieImage.endDraw();
-  PImage reallyMovieImage = movieImage.get();
-  reallyMovieImage.mask(maskme);
+  revealedImage.beginDraw();
   
-    syphonImage.beginDraw();
+  if(draw_mode == MOVIE_MASK)
+  {
+    revealedImage.image(movie, 0,0,w,h);
+  }
+  
+  if(draw_mode == JUST_AN_IMAGE)
+  {
+    revealedImage.image(background_image, 0,0,w,h);
+    
+  }
+  
+  
+  revealedImage.endDraw();
+  
+  //reallyrevealedImage.mask(maskme);
+  //revealedImage.image(background_image, 0,0,w,h);
+  ///
+  
+  revealedImage.blend(maskme,0,0, w,h, 0,0,w,h,MULTIPLY);
+
+  
+  syphonImage.beginDraw();
   syphonImage.background(0);
-  syphonImage.image(reallyMovieImage, 0,0,w,h);
- // syphonImage.image(movieImage, 0,0,w,h);
+ 
+ if(!just_mask)
+{ 
+  syphonImage.image(revealedImage, 0,0,w,h);
+}
+else
+{
+  syphonImage.scale(1,-1);
+  syphonImage.translate(0,-h);
+  syphonImage.image(maskme, 0,0,w,h);
+}
+ // syphonImage.image(revealedImage, 0,0,w,h);
+ 
   syphonImage.endDraw();
   
    image(syphonImage,0,0);
@@ -226,7 +270,7 @@ void draw() {
 
   // Instructions
   fill(0);
-  text("Drag the mouse to generate new fireballs.", 10, height-16);
+  //text("Drag the mouse to generate new fireballs.", 10, height-16);
   
   if(frameCount % numFramesTilGenerate == 0)
      fireballs.add(new Fireball(random(width), random (height), color(0,0,0)));
@@ -256,6 +300,8 @@ void keyPressed() {
   //This allows the user to have three balls on 1, 10 balls on 2, and 20 balls on 3
   if(key == 'v')
     show_crowd_visualization = !show_crowd_visualization;
+  if(key == 'm')
+    just_mask = !just_mask;
   if (key == '0') {
     count = 0;
   } 
