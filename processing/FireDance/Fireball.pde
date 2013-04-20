@@ -270,8 +270,8 @@ void adjustLife()
     
     graphics.pushMatrix();
     //  image(img, location.x, location.y);
-    graphics.stroke(255);
-    graphics.fill(255);
+    graphics.stroke(255,0,0);
+    graphics.fill(255,0,0);
     graphics.ellipse(location.x,location.y,life*1.5,life*1.5);
     
     //blend(img, 0, 0, 40, 40, 67, 0, 40, 40, ADD);

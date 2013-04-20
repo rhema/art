@@ -33,6 +33,7 @@ int numFramesTilGenerate = 20;
 float accel = 0;
 
 boolean show_crowd_visualization = false;
+boolean show_stats = false;
 
 
 import codeanticode.syphon.*;
@@ -53,6 +54,10 @@ PShader blur;
 SyphonServer server;
 int windowWidth = 0;
 int windowHeight = 0;
+
+
+
+PShader maskShader;
 
 void setup() {
   
@@ -78,6 +83,10 @@ void setup() {
    maskme = createGraphics(w, h, P3D);
    revealedImage = createGraphics(w, h, P3D);
    syphonImage = createGraphics(w, h, P3D);
+ 
+   maskme.noSmooth();
+   maskShader = loadShader("mask.glsl");
+   maskShader.set("maskSampler", maskme);
  
     server = new SyphonServer(this, "Processing Syphon");
    if(draw_mode == MOVIE_MASK)
@@ -231,6 +240,26 @@ PVector getLocatoinOfBiggestSumActivation()
 
 //PImage reallyrevealedImage = null;
 
+void removeDeadFireballs()
+{
+  ArrayList<Fireball> fireballsTemp =  new ArrayList<Fireball>();
+  for (Fireball f: fireballs) {
+    if(f.life > 0)
+    {
+      fireballsTemp.add(f);
+    }
+  }
+  fireballs = fireballsTemp;
+}
+
+void displayStats()
+{
+  int y = 20;
+  fill(255);
+  text("FPS: "+frameRate,20,y);y+=20;
+  text("Fireballs: "+fireballs.size(),20,y);y+=20;
+}
+
 void draw() {
 
   background(0);
@@ -272,17 +301,20 @@ void draw() {
   }
   
   
+  
+  
   revealedImage.endDraw();
   
   //reallyrevealedImage.mask(maskme);
   //revealedImage.image(background_image, 0,0,w,h);
   ///
   
-  revealedImage.blend(maskme,0,0, w,h, 0,0,w,h,MULTIPLY);
+  //revealedImage.blend(maskme,0,0, w,h, 0,0,w,h,MULTIPLY);
 
   
   syphonImage.beginDraw();
   syphonImage.background(0);
+  syphonImage.shader(maskShader);
  
  if(!just_mask)
 { 
@@ -296,20 +328,21 @@ else
 }
  // syphonImage.image(revealedImage, 0,0,w,h);
  
-  syphonImage.endDraw();
+ 
+
   
-   image(syphonImage,0,0);
+ syphonImage.endDraw();
+
+  
+ image(syphonImage,0,0);
+ if(show_stats)
+  {
+    displayStats();
+  }
  server.sendImage(syphonImage);
   
-  
-  ArrayList<Fireball> fireballsTemp =  new ArrayList<Fireball>();//remove dead fireballs
-  for (Fireball f: fireballs) {
-    if(f.life > 0)
-    {
-      fireballsTemp.add(f);
-    }
-  }
-  fireballs = fireballsTemp;
+  //remove dead fireballs
+  removeDeadFireballs();
 
   // Instructions
   fill(0);
@@ -353,6 +386,8 @@ void keyPressed() {
     show_crowd_visualization = !show_crowd_visualization;
   if(key == 'm')
     just_mask = !just_mask;
+  if(key == 's')
+    show_stats = !show_stats;
   if (key == '0') {
     count = 0;
   } 
