@@ -35,6 +35,9 @@ float accel = 0;
 boolean show_crowd_visualization = false;
 boolean show_stats = false;
 
+float dist_till_cluster = 25;
+boolean do_cluster = true;
+boolean cluster_by_life = true;
 
 import codeanticode.syphon.*;
 import processing.video.*;
@@ -92,7 +95,7 @@ void setup() {
    if(draw_mode == MOVIE_MASK)
    {
      movie = new Movie(this, "bubbles.mov");
-     movie.play();
+     movie.loop();
    }
   
 //  windowSize=3;
@@ -252,6 +255,32 @@ void removeDeadFireballs()
   fireballs = fireballsTemp;
 }
 
+/*
+  Performs a single n pass over all n fireballs to check distances and cluster.
+  If we ran this until it stopped doing things, it would cluster more smoothly, but
+  I think we would rather see it happen.  If the distanes are small enough, we cluster by setting life to a small number.
+*/
+void clusterNearFireballs()
+{
+  for (Fireball f: fireballs) {
+    for(Fireball b: fireballs)
+    {
+      if(b == f)//don't compare self to self
+        continue;
+        
+      
+      //if(dist(f.location.x,f.location.y, b.location.x, b.location.y) < dist_till_cluster && b.life > 0)
+      if(dist(f.location.x,f.location.y, b.location.x, b.location.y) < (b.life+f.life)*.2 && b.life > 0)
+      {
+        f.life = Math.max(f.life,b.life);
+        f.location.x = (b.location.x+f.location.x)*.5;
+        f.location.y = (b.location.y+f.location.y)*.5;
+        b.life = -1;
+      }
+    }
+  }
+}
+
 void displayStats()
 {
   int y = 20;
@@ -343,6 +372,8 @@ else
   
   //remove dead fireballs
   removeDeadFireballs();
+  if(do_cluster)
+    clusterNearFireballs();
 
   // Instructions
   fill(0);
