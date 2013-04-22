@@ -4,7 +4,7 @@
 
 int MOVIE_MASK = 1;
 int JUST_AN_IMAGE = 2;
-int draw_mode = MOVIE_MASK;
+int draw_mode = JUST_AN_IMAGE;
 
 float generation_threshold = 3;
 
@@ -34,6 +34,7 @@ float accel = 0;
 
 boolean show_crowd_visualization = false;
 boolean show_stats = false;
+boolean show_mask_on_full = false;
 
 float dist_till_cluster = 25;
 boolean do_cluster = true;
@@ -47,6 +48,7 @@ PImage img;
 PImage imgMask;
 PImage background_image;
 String backgound_image_file = "firetest1.png";
+//String backgound_image_file = "fireProgress.png";
 int w = 640;
 int h = 480;
 PGraphics maskme;
@@ -138,6 +140,7 @@ float winner_y = 100;
 
 void gotCameraSensorData()
 {
+  println("data...");
   //println("I HAS DATA");
   //Now a function goes here that lists left and right position... maybe find a winner?
   int x = 0;
@@ -200,6 +203,8 @@ void visualizeWeights()
 
 float getBiggestSumActivation()
 {
+  if(crowdSquares_added == null)
+    return 0;
   float ret = 0;
   for(Float f: crowdSquares_added)
      if(f>ret)
@@ -309,6 +314,8 @@ void draw() {
   maskme.scale(1,-1);
   maskme.translate(0,-h);
   maskme.fill(0,0,0,255);
+  if(show_mask_on_full)
+    maskme.fill(255,0,0,255);
   maskme.rect(0,0,w,h);
   for (Fireball f: fireballs) {
     // Path following and separation are worked on in this function
@@ -417,6 +424,8 @@ void keyPressed() {
   int fadeout = 0;
 
   //This allows the user to have three balls on 1, 10 balls on 2, and 20 balls on 3
+  if(key == 'i')
+    show_mask_on_full = !show_mask_on_full;
   if(key == 'v')
     show_crowd_visualization = !show_crowd_visualization;
   if(key == 'm')
