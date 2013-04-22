@@ -181,6 +181,36 @@ void gotCameraSensorData()
 }
 
 
+void visualizeWeightsAsRects(PGraphics pg)
+{
+  if (windowSize > 0)
+  {
+    println("lets draw...");
+    float scale_x = float(windowWidth)/float(windowSize);
+    float scale_y = float(windowHeight)/float(windowSize);
+    int index = 0;
+    for (Float val:crowdSquares)
+    {
+
+      int x = -1+windowSize - index%windowSize;
+      int y = index/windowSize;
+      
+      color c = color(255-val*255, val*255, 0);
+      pg.stroke(c);
+      pg.fill(c);
+//      float fx = scale_x*(x+.5);
+//      float fy = scale_y*(y+.5);
+      float fx = scale_x*(x);
+      float fy = scale_y*(y);
+      float serze = 10 + 10*crowdSquares_added.get(index);
+      pg.rect(fx, fy, scale_x, scale_y); 
+      //ellipse(fx, fy, serze, serze);
+      index +=1;
+    }
+  } 
+}
+
+
 void visualizeWeights()
 {
   if (windowSize > 0)
@@ -314,10 +344,7 @@ void draw() {
   background(0);
   //image(img, width/2, height/2);
   calculateWeight();
-  if(show_crowd_visualization)
-  {
-    visualizeWeights();
-  }
+  
   
   
   maskme.beginDraw();
@@ -381,15 +408,24 @@ else
  
  
 
+if(show_crowd_visualization)
+  {
+    visualizeWeightsAsRects(syphonImage);
+  }
   
  syphonImage.endDraw();
 
+ 
+ 
   
  image(syphonImage,0,0);
  if(show_stats)
   {
     displayStats();
   }
+  
+  
+  
  server.sendImage(syphonImage);
   
   //remove dead fireballs
