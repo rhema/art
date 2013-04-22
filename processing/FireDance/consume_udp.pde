@@ -116,7 +116,13 @@ void cameraSensorDataThread()
           index+=1;
           continue;
         }
-        crowdSquares.set(index-1, crowdSquares.get(index-1)*.5 +  Float.parseFloat(num)*.5);
+        float parsedFloat = Float.parseFloat(num);
+        //CHECK FOR INFIN HERE...
+        //Set min max et cetera
+        if(parsedFloat < min_thresh)
+          parsedFloat = 0;
+        parsedFloat = sensor_scale*parsedFloat;
+        crowdSquares.set(index-1, crowdSquares.get(index-1)*.5 +  parsedFloat*.5);
         index+=1;
         if(index == windowSize*windowSize)
           break;

@@ -11,6 +11,12 @@ float generation_threshold = 3;
 boolean just_mask=false;
 
 float jitter_dist = 4;
+float min_thresh = 0;//Minimum value of crowd square to register. use m and M to change
+float sensor_scale = 1;//Factor that multiplies raw value.  use s and S to change
+float sensor_scale_delta = .05;
+float min_thresh_delta = .01;
+
+
 
 //import java.lang.Math;
 // A list of fireballs
@@ -295,7 +301,12 @@ void displayStats()
   for(Fireball f: fireballs)
     if(f.life > max_life)
        max_life = f.life;
- text("Max Life: "+max_life,20,y);y+=20;
+  text("Max Life: "+max_life,20,y);y+=20;
+  text("(m/M) min_thresh: "+min_thresh,20,y);y+=20;
+  text("(p/P) sensor_scale: "+sensor_scale,20,y);y+=20;
+
+ 
+ 
 }
 
 void draw() {
@@ -423,6 +434,15 @@ void keyPressed() {
   color cc  = color(255, 204, 0);
   int fadeout = 0;
 
+  if(key == 'm')
+    min_thresh -= min_thresh_delta;
+  if(key == 'M')
+    min_thresh += min_thresh_delta;
+  if(key == 'p')
+    sensor_scale -= sensor_scale_delta;
+  if(key == 'P')
+    sensor_scale += sensor_scale_delta;
+      
   //This allows the user to have three balls on 1, 10 balls on 2, and 20 balls on 3
   if(key == 'i')
     show_mask_on_full = !show_mask_on_full;

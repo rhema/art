@@ -37,6 +37,8 @@ void setupWeight()
 
 void calculateWeight()
 {
+  if(weight == null || weight.size() == 0)
+     return;
   int curI,curJ;
   for(int i=0;i<windowSize*windowSize;i++)
   {
