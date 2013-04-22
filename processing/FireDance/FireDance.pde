@@ -4,7 +4,7 @@
 
 int MOVIE_MASK = 1;
 int JUST_AN_IMAGE = 2;
-int draw_mode = JUST_AN_IMAGE;
+int draw_mode = MOVIE_MASK;
 
 float generation_threshold = 3;
 
@@ -57,7 +57,6 @@ PShader blur;
 SyphonServer server;
 int windowWidth = 0;
 int windowHeight = 0;
-
 
 
 PShader maskShader;
@@ -287,6 +286,11 @@ void displayStats()
   fill(255);
   text("FPS: "+frameRate,20,y);y+=20;
   text("Fireballs: "+fireballs.size(),20,y);y+=20;
+  float max_life = 0;
+  for(Fireball f: fireballs)
+    if(f.life > max_life)
+       max_life = f.life;
+ text("Max Life: "+max_life,20,y);y+=20;
 }
 
 void draw() {

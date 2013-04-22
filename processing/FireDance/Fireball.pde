@@ -203,7 +203,11 @@ void adjustLife()
       }
       index +=1;
     }
-    life += mm*.2;
+    //life += mm*.2;//cant be too big...
+    if(life > 0)
+      life += mm*(1/(Math.log(1+life)+1));
+    //if(life > 0)
+    //life -= .1*Math.log(life) ;// - (Math.log(1+life)*.0000005);//cant be too big...
     
     /*
     life *= .95;
