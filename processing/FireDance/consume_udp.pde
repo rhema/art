@@ -52,9 +52,28 @@ void wiiDataThread()
       String[] numbers = received.split(" ");
 //      print(numbers[0]);
       float f = Float.parseFloat(numbers[0]);
+      
       //print(f);
       float smooth = .7;
       accel = accel*smooth+f*(1.0-smooth);
+      
+      if(numbers.length > 3)
+      {
+        if(pAccel == null)
+        {
+          pAccel = new PVector(0,0,0);
+          pAccelAverage = new PVector(.5,.5,.5);
+        }
+        f = Float.parseFloat(numbers[1]);
+        pAccel.x = f;//pAccel.x*smooth+f*(1.0-smooth);
+        
+        f = Float.parseFloat(numbers[2]);
+        pAccel.y = f;// pAccel.y*smooth+f*(1.0-smooth);
+        
+        f = Float.parseFloat(numbers[3]);
+        pAccel.z = f;// pAccel.z*smooth+f*(1.0-smooth);
+      }
+      
       gotWiiData();
       //print(numbers[0]+"  "+" x:"+numbers[2]+ " y:" + numbers[3] + " z:" + numbers[4]+ "\n");
   }

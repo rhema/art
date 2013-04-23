@@ -17,6 +17,7 @@ float min_thresh = 0;//Minimum value of crowd square to register. use m and M to
 float sensor_scale = 1;//Factor that multiplies raw value.  use s and S to change
 float sensor_scale_delta = .05;
 float min_thresh_delta = .01;
+float wiiMotePower = 1;
 
 
 
@@ -39,6 +40,9 @@ int numFramesTilGenerate = 20;
 //These are the variables that the communication code writes to.  Don't do anything but read from them
 //or bad things (sychronization errors) will happen.
 float accel = 0;
+float accelAverage = 0;
+PVector pAccel = null;
+PVector pAccelAverage = null;
 
 boolean show_crowd_visualization = false;
 boolean show_stats = false;
@@ -72,15 +76,15 @@ int windowHeight = 0;
 PShader maskShader;
 
 void setup() {
-  
+
   //size(1920,1080,P3D);
   windowWidth = displayWidth;
   windowHeight = displayHeight;
   windowWidth = w;
   windowHeight = h;
-  
+
   size(windowWidth, windowHeight, P3D);
-  
+
   background_image = loadImage(backgound_image_file);
   //img = loadImage("fire.jpg");
   //texture(img);
@@ -89,35 +93,32 @@ void setup() {
   thread("wiiDataThread");
   thread("cameraSensorDataThread");
   hasWeight=false;
-  
-  
-  
-   maskme = createGraphics(w, h, P3D);
-   revealedImage = createGraphics(w, h, P3D);
-   syphonImage = createGraphics(w, h, P3D);
- 
-   maskme.noSmooth();
-   maskShader = loadShader("mask.glsl");
-   maskShader.set("maskSampler", maskme);
- 
-    server = new SyphonServer(this, "Processing Syphon");
-   if(draw_mode == MOVIE_MASK)
-   {
-     movie = new Movie(this, "FireBlue.mp4");
-     movie.loop();
-   }
-  
-//  windowSize=3;
-//    crowdSquares = new Vector<Float>();
-//        for(int i=0; i<windowSize*windowSize; i++)
-//        {
-//          crowdSquares.add(new Float(0));
-//        }
-//        crowdSquares.set(0,1.0);
-//        
-//  setupWeight();
-//  calculateWeight();
-//  windowSize=0;
+  maskme = createGraphics(w, h, P3D);
+  revealedImage = createGraphics(w, h, P3D);
+  syphonImage = createGraphics(w, h, P3D);
+
+  maskme.noSmooth();
+  maskShader = loadShader("mask.glsl");
+  maskShader.set("maskSampler", maskme);
+
+  server = new SyphonServer(this, "Processing Syphon");
+  if (draw_mode == MOVIE_MASK)
+  {
+    movie = new Movie(this, "FireBlue.mp4");
+    movie.loop();
+  }
+
+  //  windowSize=3;
+  //    crowdSquares = new Vector<Float>();
+  //        for(int i=0; i<windowSize*windowSize; i++)
+  //        {
+  //          crowdSquares.add(new Float(0));
+  //        }
+  //        crowdSquares.set(0,1.0);
+  //        
+  //  setupWeight();
+  //  calculateWeight();
+  //  windowSize=0;
 }
 
 void movieEvent(Movie m) {
@@ -135,12 +136,13 @@ void gotWiiData()
    println(max);
    }*/
 
-  if (accel > .50)
-  {
-    //pow
-    kickBalls();
-  }
+  //if (accel > .50)
+  //{
+  //pow
+  //kickBalls(accel*40);
+  //}
   //println(accel);
+  
 }
 
 float winner_x = 100;
@@ -172,13 +174,13 @@ void gotCameraSensorData()
   //winner_y = (.5+y)*scale_y;
   seekX = (.5+x)*scale_x;
   seekY = (.5+y)*scale_y;
-  
-  if(!hasWeight)
+
+  if (!hasWeight)
   {
-     setupWeight();
-     hasWeight=true;
+    setupWeight();
+    hasWeight=true;
   }
- 
+
   //displayWidth, displayHeight
 }
 
@@ -196,12 +198,12 @@ void visualizeWeightsAsRects(PGraphics pg)
 
       int x = -1+windowSize - index%windowSize;
       int y = index/windowSize;
-      
+
       color c = color(255-val*255, val*255, 0);
       pg.stroke(c);
       pg.fill(c);
-//      float fx = scale_x*(x+.5);
-//      float fy = scale_y*(y+.5);
+      //      float fx = scale_x*(x+.5);
+      //      float fy = scale_y*(y+.5);
       float fx = scale_x*(x);
       float fy = scale_y*(y);
       float serze = 10 + 10*crowdSquares_added.get(index);
@@ -209,7 +211,7 @@ void visualizeWeightsAsRects(PGraphics pg)
       //ellipse(fx, fy, serze, serze);
       index +=1;
     }
-  } 
+  }
 }
 
 
@@ -226,7 +228,7 @@ void visualizeWeights()
 
       int x = -1+windowSize - index%windowSize;
       int y = index/windowSize;
-      
+
       color c = color(0, val*255, 0);
       stroke(c);
       fill(c);
@@ -236,17 +238,17 @@ void visualizeWeights()
       ellipse(fx, fy, serze, serze);
       index +=1;
     }
-  } 
+  }
 }
 
 float getBiggestSumActivation()
 {
-  if(crowdSquares_added == null)
+  if (crowdSquares_added == null)
     return 0;
   float ret = 0;
-  for(Float f: crowdSquares_added)
-     if(f>ret)
-       ret = f;
+  for (Float f: crowdSquares_added)
+    if (f>ret)
+      ret = f;
   return ret;
 }
 
@@ -254,32 +256,32 @@ PVector getLocationIndexForI(int target)
 {
   //so ugly...
   int count = 0;
-  for(int i=0; i<windowSize; i+=1)
-    for(int j=0; j<windowSize; j+=1)
-       {
-         if(target == count)
-            return locForIJ(windowSize-j,i);
-         count +=1;
-       }
-   return locForIJ(0,0);
+  for (int i=0; i<windowSize; i+=1)
+    for (int j=0; j<windowSize; j+=1)
+    {
+      if (target == count)
+        return locForIJ(windowSize-j, i);
+      count +=1;
+    }
+  return locForIJ(0, 0);
 }
 
 PVector getLocatoinOfBiggestSumActivation()
 {
-  
+
   float ret = 0;
   int mi = 0;
   int i = 0;
-  for(Float f: crowdSquares_added)
+  for (Float f: crowdSquares_added)
   {
-     if(f>ret)
-     {
-       ret = f;
-       mi = i;
-     }
-     i+=1;
+    if (f>ret)
+    {
+      ret = f;
+      mi = i;
+    }
+    i+=1;
   }
-  
+
   return getLocationIndexForI(mi);
 }
 
@@ -289,7 +291,7 @@ void removeDeadFireballs()
 {
   ArrayList<Fireball> fireballsTemp =  new ArrayList<Fireball>();
   for (Fireball f: fireballs) {
-    if(f.life > 0)
+    if (f.life > 0)
     {
       fireballsTemp.add(f);
     }
@@ -299,22 +301,22 @@ void removeDeadFireballs()
 
 /*
   Performs a single n pass over all n fireballs to check distances and cluster.
-  If we ran this until it stopped doing things, it would cluster more smoothly, but
-  I think we would rather see it happen.  If the distanes are small enough, we cluster by setting life to a small number.
-*/
+ If we ran this until it stopped doing things, it would cluster more smoothly, but
+ I think we would rather see it happen.  If the distanes are small enough, we cluster by setting life to a small number.
+ */
 void clusterNearFireballs()
 {
   for (Fireball f: fireballs) {
-    for(Fireball b: fireballs)
+    for (Fireball b: fireballs)
     {
-      if(b == f)//don't compare self to self
-        continue;
-        
-      
+      if (b == f)//don't compare self to self
+          continue;
+
+
       //if(dist(f.location.x,f.location.y, b.location.x, b.location.y) < dist_till_cluster && b.life > 0)
-      if(dist(f.location.x,f.location.y, b.location.x, b.location.y) < (b.life+f.life)*.2 && b.life > 0)
+      if (dist(f.location.x, f.location.y, b.location.x, b.location.y) < (b.life+f.life)*.2 && b.life > 0)
       {
-        f.life = Math.max(f.life,b.life);
+        f.life = Math.max(f.life, b.life);
         f.location.x = (b.location.x+f.location.x)*.5;
         f.location.y = (b.location.y+f.location.y)*.5;
         b.life = -1;
@@ -327,18 +329,37 @@ void displayStats()
 {
   int y = 20;
   fill(255);
-  text("FPS: "+frameRate,20,y);y+=20;
-  text("Fireballs: "+fireballs.size(),20,y);y+=20;
+  text("FPS: "+frameRate, 20, y);
+  y+=20;
+  text("Fireballs: "+fireballs.size(), 20, y);
+  y+=20;
   float max_life = 0;
-  for(Fireball f: fireballs)
-    if(f.life > max_life)
-       max_life = f.life;
-  text("Max Life: "+max_life,20,y);y+=20;
-  text("(m/M) min_thresh: "+min_thresh,20,y);y+=20;
-  text("(p/P) sensor_scale: "+sensor_scale,20,y);y+=20;
-
- 
- 
+  for (Fireball f: fireballs)
+    if (f.life > max_life)
+      max_life = f.life;
+  text("Max Life: "+max_life, 20, y);
+  y+=20;
+  text("(m/M) min_thresh: "+min_thresh, 20, y);
+  y+=20;
+  text("(p/P) sensor_scale: "+sensor_scale, 20, y);
+  y+=20;
+  
+  if(pAccel != null)
+  {
+    text("wii accel: "+String.format("%.2g", accel) + " ave:"+String.format("%.2g%n", accelAverage), 20, y);
+     y+=20;
+   
+    text("wii accelX: "+String.format("%.2g", pAccel.x) + " ave:"+String.format("%.2g%n", pAccelAverage.x), 20, y);
+    y+=20;
+    text("wii accelY: "+String.format("%.2g", pAccel.y) + " ave:"+String.format("%.2g%n", pAccelAverage.y), 20, y);
+    y+=20;
+    text("wii accelZ: "+String.format("%.2g", pAccel.z) + " ave:"+String.format("%.2g%n", pAccelAverage.z), 20, y);
+    y+=20;
+    
+  }
+  text("wiiMotePower (p/P): "+String.format("%.2g", wiiMotePower), 20, y);
+  y+=20;
+  
 }
 
 void draw() {
@@ -346,9 +367,9 @@ void draw() {
   background(0);
   //image(img, width/2, height/2);
   calculateWeight();
-  
-  
-  
+
+
+
   maskme.beginDraw();
   maskme.pushMatrix();
   maskme.scale(1,-1);
@@ -357,6 +378,7 @@ void draw() {
   if(show_mask_on_full)
     maskme.fill(255,0,0,255);
   maskme.rect(0,0,w,h);
+
   for (Fireball f: fireballs) {
     // Path following and separation are worked on in this function
     f.applyBehaviors(fireballs);
@@ -366,81 +388,88 @@ void draw() {
   }
   maskme.popMatrix();
   maskme.endDraw();
-  
+
   revealedImage.beginDraw();
-  
-  if(draw_mode == MOVIE_MASK)
+
+  if (draw_mode == MOVIE_MASK)
   {
-    revealedImage.image(movie, 0,0,w,h);
+    revealedImage.image(movie, 0, 0, w, h);
   }
-  
-  if(draw_mode == JUST_AN_IMAGE)
+
+  if (draw_mode == JUST_AN_IMAGE)
   {
-    revealedImage.image(background_image, 0,0,w,h);
-    
+    revealedImage.image(background_image, 0, 0, w, h);
   }
-  
-  
-  
-  
+
+
+
+
   revealedImage.endDraw();
-  
+
   //reallyrevealedImage.mask(maskme);
   //revealedImage.image(background_image, 0,0,w,h);
   ///
-  
+
   //revealedImage.blend(maskme,0,0, w,h, 0,0,w,h,MULTIPLY);
 
-  
+
   syphonImage.beginDraw();
   syphonImage.background(0);
   syphonImage.shader(maskShader);
- 
- if(!just_mask)
-{ 
-  syphonImage.image(revealedImage, 0,0,w,h);
-}
-else
-{
-  syphonImage.scale(1,-1);
-  syphonImage.translate(0,-h);
-  syphonImage.image(maskme, 0,0,w,h);
-}
- // syphonImage.image(revealedImage, 0,0,w,h);
- 
- 
 
-if(show_crowd_visualization)
+  if (!just_mask)
+  { 
+    syphonImage.image(revealedImage, 0, 0, w, h);
+  }
+  else
+  {
+    syphonImage.scale(1, -1);
+    syphonImage.translate(0, -h);
+    syphonImage.image(maskme, 0, 0, w, h);
+  }
+  // syphonImage.image(revealedImage, 0,0,w,h);
+
+
+
+  if (show_crowd_visualization)
   {
     visualizeWeightsAsRects(syphonImage);
   }
-  
- syphonImage.endDraw();
 
- 
- 
-  
- image(syphonImage,0,0);
- if(show_stats)
+  syphonImage.endDraw();
+
+
+
+
+  image(syphonImage, 0, 0);
+  if (show_stats)
   {
     displayStats();
   }
-  
-  
-  
- server.sendImage(syphonImage);
-  
+
+
+
+  server.sendImage(syphonImage);
+
   //remove dead fireballs
   removeDeadFireballs();
-  if(do_cluster)
+  if (do_cluster)
     clusterNearFireballs();
 
+  float mecel = 0;
+  float a = accel - accelAverage;
+  
+  mecel = a;
+  float dferce = ((1+mecel)*(1+mecel) - 1);
+  kickBalls(dferce);
+  //println(dferce);
+  //println("df:"+dferce+" x: "+pAccel.x+" y: "+pAccel.y+" z: "+pAccel.z);
   // Instructions
   fill(0);
   //text("Drag the mouse to generate new fireballs.", 10, height-16);
-  
-  
-  if(frameCount % 1 == 0)
+
+
+  if (frameCount % 1 == 0)
   {
      float active = getBiggestSumActivation();
      if(active > generation_threshold)
@@ -450,7 +479,6 @@ if(show_crowd_visualization)
        fireballs.add(new Fireball(loc.x, loc.y, color(0,0,0)));
      }
   }
-  
 }
 
 
@@ -458,12 +486,31 @@ if(show_crowd_visualization)
 //  fireballs.add(new Fireball(mouseX,mouseY));
 //}
 
-void kickBalls()
+void kickBalls(float kickspeed)
 {
   for (Fireball f: fireballs) 
   {
-    f.kick = new PVector(random(-1*f.kickspeed, f.kickspeed), random(-1*f.kickspeed, f.kickspeed));
-    f.maxspeed = f.kickspeed;
+    /*E12
+    //f.kick = new PVector(random(-1*f.kickspeed, f.kickspeed), random(-1*f.kickspeed, f.kickspeed));
+    if(mag(f.kick.x,f.kick.y) != 0)
+    {
+      f.kick = new PVector(random(-1*kickspeed, kickspeed), random(-1*kickspeed, kickspeed));
+    }
+    else
+    {
+      f.velocity.x += f.kick.x*kickspeed;
+      f.velocity.y += f.kick.y*kickspeed;
+      //f.kick = new PVector(kickspeed*f.kick.x, kickspeed*f.kick.y);
+    }
+    //f.maxspeed = kickspeed;
+    */
+    f.wiiPower = kickspeed;//.5;//kickspeed;
+    if(pAccel != null)
+    {
+      f.wiiDirection.y = -(pAccel.x - pAccelAverage.x);//.5;
+      f.wiiDirection.x = 2*(pAccel.y - pAccelAverage.y);
+      //f.wiiDirection.x = pAccel.z - pAccelAverage.z;
+    } 
   }
 }
 
@@ -472,24 +519,37 @@ void keyPressed() {
   int kick  = 0; //bb
   color cc  = color(255, 204, 0);
   int fadeout = 0;
+  
+  if (key == 'c')
+  {
+    //Press c a bunch to get a good average.  Moves close to current value...
+    accelAverage = (accel+accelAverage)*.5;
+    pAccelAverage.x = (pAccel.x+pAccelAverage.x)*.5;
+    pAccelAverage.y = (pAccel.y+pAccelAverage.y)*.5;
+    pAccelAverage.z = (pAccel.z+pAccelAverage.z)*.5;
+  }
 
-  if(key == 'm')
+  if(key == 'w')
+     wiiMotePower -= .1;
+  if(key == 'W')
+     wiiMotePower += .1;
+  if (key == 'm')
     min_thresh -= min_thresh_delta;
-  if(key == 'M')
+  if (key == 'M')
     min_thresh += min_thresh_delta;
-  if(key == 'p')
+  if (key == 'p')
     sensor_scale -= sensor_scale_delta;
-  if(key == 'P')
+  if (key == 'P')
     sensor_scale += sensor_scale_delta;
-      
+
   //This allows the user to have three balls on 1, 10 balls on 2, and 20 balls on 3
-  if(key == 'i')
+  if (key == 'i')
     show_mask_on_full = !show_mask_on_full;
-  if(key == 'v')
+  if (key == 'v')
     show_crowd_visualization = !show_crowd_visualization;
-  if(key == 'm')
+  if (key == 'm')
     just_mask = !just_mask;
-  if(key == 's')
+  if (key == 's')
     show_stats = !show_stats;
   if (key == '0') {
     count = 0;
@@ -513,24 +573,24 @@ void keyPressed() {
     fadeout = 1;
   }
 
-/*
+  /*
 
-  if (count != 0 ) { //bb
-    //This allows us to go up and down in crowd sizes (hopefully according to movement)
-    if (count > fireballs.size()) {
-      int difference = count - fireballs.size();
-      for (int i = 0; i < difference; i++) {
-        fireballs.add(new Fireball(random(width), random (height), cc));
-      }
-    }
-    else if (count < fireballs.size()) {
-      int difference = fireballs.size() - count;
-      for (int i = 0; i < difference; i++) {
-        fireballs.remove(fireballs.size()-1);
-      }
-    }
-  }
-  */
+   if (count != 0 ) { //bb
+   //This allows us to go up and down in crowd sizes (hopefully according to movement)
+   if (count > fireballs.size()) {
+   int difference = count - fireballs.size();
+   for (int i = 0; i < difference; i++) {
+   fireballs.add(new Fireball(random(width), random (height), cc));
+   }
+   }
+   else if (count < fireballs.size()) {
+   int difference = fireballs.size() - count;
+   for (int i = 0; i < difference; i++) {
+   fireballs.remove(fireballs.size()-1);
+   }
+   }
+   }
+   */
 
   print("Count: "); 
   print(count); 
@@ -547,10 +607,9 @@ void keyPressed() {
   } 
 
   if (kick == 1) {
-    kickBalls();
+    kickBalls(.5);
   }
 }
-
 
 
 
