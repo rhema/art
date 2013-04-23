@@ -32,7 +32,7 @@ class Fireball {
     normalspeed  = 5;                 //bb
     maxspeed     = normalspeed;       //bb
     maxspeeddecay= 0.2;               //bb
-    kickspeed    = 10;                //bb
+    kickspeed    = 15;                //bb
     maxforce     = 0.2;
     life = 20;
     acceleration = new PVector(0, 0);
@@ -216,6 +216,10 @@ void adjustLife()
       life = -1;
     */
     
+     
+    if(life > 40){
+     life = 40; 
+    }
     
     this.life -= 1.5;
   }

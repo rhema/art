@@ -4,7 +4,9 @@
 
 int MOVIE_MASK = 1;
 int JUST_AN_IMAGE = 2;
-int draw_mode = JUST_AN_IMAGE;
+int draw_mode = MOVIE_MASK;
+int streak = 10;
+
 
 float generation_threshold = 3;
 
@@ -43,7 +45,7 @@ boolean show_stats = false;
 boolean show_mask_on_full = false;
 
 float dist_till_cluster = 25;
-boolean do_cluster = true;
+boolean do_cluster = false;
 boolean cluster_by_life = true;
 
 import codeanticode.syphon.*;
@@ -101,7 +103,7 @@ void setup() {
     server = new SyphonServer(this, "Processing Syphon");
    if(draw_mode == MOVIE_MASK)
    {
-     movie = new Movie(this, "bubbles.mov");
+     movie = new Movie(this, "FireBlue.mp4");
      movie.loop();
    }
   
@@ -351,7 +353,7 @@ void draw() {
   maskme.pushMatrix();
   maskme.scale(1,-1);
   maskme.translate(0,-h);
-  maskme.fill(0,0,0,255);
+  maskme.fill(0,0,0,streak);
   if(show_mask_on_full)
     maskme.fill(255,0,0,255);
   maskme.rect(0,0,w,h);
@@ -444,6 +446,7 @@ if(show_crowd_visualization)
      if(active > generation_threshold)
      {
        PVector loc = getLocatoinOfBiggestSumActivation();
+       if(fireballs.size()<200)
        fireballs.add(new Fireball(loc.x, loc.y, color(0,0,0)));
      }
   }
