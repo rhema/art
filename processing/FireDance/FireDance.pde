@@ -13,12 +13,13 @@ float generation_threshold = 3;
 boolean just_mask=false;
 
 float jitter_dist = 4;
-float min_thresh = 0;//Minimum value of crowd square to register. use m and M to change
-float sensor_scale = 1;//Factor that multiplies raw value.  use s and S to change
+float min_thresh = .01;//Minimum value of crowd square to register. use m and M to change
+float sensor_scale = 3;//Factor that multiplies raw value.  use s and S to change
 float sensor_scale_delta = .05;
 float min_thresh_delta = .01;
-float wiiMotePower = 1;
-float audiencePower = 1;
+float wiiMotePower = .1;
+float audiencePower = .1;
+int MAX_FIREBALLS = 200;
 
 
 
@@ -62,8 +63,8 @@ PImage imgMask;
 PImage background_image;
 String backgound_image_file = "firetest1.png";
 //String backgound_image_file = "fireProgress.png";
-int w = 1080;
-int h = 720;
+int w = 700;
+int h = 500;
 PGraphics maskme;
 PGraphics revealedImage;
 PGraphics syphonImage;
@@ -479,7 +480,7 @@ void draw() {
      if(active > generation_threshold)
      {
        PVector loc = getLocatoinOfBiggestSumActivation();
-       if(fireballs.size()<200)
+       if(fireballs.size()<MAX_FIREBALLS)
        fireballs.add(new Fireball(loc.x, loc.y, color(0,0,0)));
      }
   }
