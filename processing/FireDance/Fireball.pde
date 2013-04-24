@@ -124,7 +124,7 @@ class Fireball {
     PVector seekForce = seek(new PVector(this.seek_x, this.seek_y));
 
     //separateForce.mult(2);
-    seekForce.mult(1);
+    seekForce.mult(1*audiencePower);
     applyForce(separateForce);
     applyForce(seekForce);
     PVector p = new PVector(wiiDirection.x*wiiPower,wiiDirection.y*wiiPower);
@@ -225,8 +225,8 @@ class Fireball {
     */
     
      
-    if(life > 40){
-     life = 40; 
+    if(life > 30){
+     life = 30; 
     }
     
 

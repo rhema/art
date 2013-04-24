@@ -18,6 +18,7 @@ float sensor_scale = 1;//Factor that multiplies raw value.  use s and S to chang
 float sensor_scale_delta = .05;
 float min_thresh_delta = .01;
 float wiiMotePower = 1;
+float audiencePower = 1;
 
 
 
@@ -61,8 +62,8 @@ PImage imgMask;
 PImage background_image;
 String backgound_image_file = "firetest1.png";
 //String backgound_image_file = "fireProgress.png";
-int w = 640;
-int h = 480;
+int w = 1080;
+int h = 720;
 PGraphics maskme;
 PGraphics revealedImage;
 PGraphics syphonImage;
@@ -359,6 +360,9 @@ void displayStats()
   }
   text("wiiMotePower (p/P): "+String.format("%.2g", wiiMotePower), 20, y);
   y+=20;
+  text("audiencePower (p/P): "+String.format("%.2g", audiencePower), 20, y);
+  y+=20;
+  
   
 }
 
@@ -528,6 +532,12 @@ void keyPressed() {
     pAccelAverage.y = (pAccel.y+pAccelAverage.y)*.5;
     pAccelAverage.z = (pAccel.z+pAccelAverage.z)*.5;
   }
+
+  if(key == 'a')
+     audiencePower -= .1;
+  if(key == 'A')
+     audiencePower += .1;
+
 
   if(key == 'w')
      wiiMotePower -= .1;
