@@ -4,7 +4,7 @@
 
 int MOVIE_MASK = 1;
 int JUST_AN_IMAGE = 2;
-int draw_mode = MOVIE_MASK;
+int draw_mode = JUST_AN_IMAGE;
 int streak = 10;
 
 
@@ -19,7 +19,7 @@ float sensor_scale_delta = .05;
 float min_thresh_delta = .01;
 float wiiMotePower = .1;
 float audiencePower = .1;
-int MAX_FIREBALLS = 200;
+int MAX_FIREBALLS = 10;
 
 
 
@@ -64,7 +64,7 @@ PImage background_image;
 String backgound_image_file = "firetest1.png";
 //String backgound_image_file = "fireProgress.png";
 int w = 700;
-int h = 500;
+int h = 200;
 PGraphics maskme;
 PGraphics revealedImage;
 PGraphics syphonImage;
@@ -94,6 +94,7 @@ void setup() {
   fireballs = new ArrayList<Fireball>();
   thread("wiiDataThread");
   thread("cameraSensorDataThread");
+  thread("midiPush");
   hasWeight=false;
   maskme = createGraphics(w, h, P3D);
   revealedImage = createGraphics(w, h, P3D);
@@ -152,7 +153,7 @@ float winner_y = 100;
 
 void gotCameraSensorData()
 {
-  println("data...");
+  //println("data...");
   //println("I HAS DATA");
   //Now a function goes here that lists left and right position... maybe find a winner?
   int x = 0;
@@ -326,7 +327,7 @@ void clusterNearFireballs()
     }
   }
 }
-
+float max_life = 0;
 void displayStats()
 {
   int y = 20;
@@ -335,7 +336,7 @@ void displayStats()
   y+=20;
   text("Fireballs: "+fireballs.size(), 20, y);
   y+=20;
-  float max_life = 0;
+  max_life = 0;
   for (Fireball f: fireballs)
     if (f.life > max_life)
       max_life = f.life;
@@ -482,7 +483,17 @@ void draw() {
        PVector loc = getLocatoinOfBiggestSumActivation();
        if(fireballs.size()<MAX_FIREBALLS)
        fireballs.add(new Fireball(loc.x, loc.y, color(0,0,0)));
+       //midi play
+       
+       
      }
+     
+       PVector loc = getLocatoinOfBiggestSumActivation();
+       midi_speed = (loc.y/((float)h));
+       midi_note = (int)(127.0*(loc.x/((float)w)));
+       //println("w:"+w+"   loc.x:"+loc.x+"  MIDI NOTE:"+midi_note);
+       midi_velocity = 50;//(70.0 * (max_life)/30.0) ;
+       midi_on = true;//true;
   }
 }
 
